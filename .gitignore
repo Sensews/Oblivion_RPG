@@ -1,0 +1,74 @@
+# Arquivos do sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Arquivos temporários e de log
+*.log
+*.tmp
+*.temp
+*.cache
+*.swp
+*.swo
+*~
+
+# Configurações do IDE/Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.metadata
+
+# Dependências e packages
+node_modules/
+vendor/
+bower_components/
+
+# Arquivos de configuração sensíveis
+config/database.php
+config/config.php
+.env
+.env.local
+.env.production
+.env.staging
+
+# Arquivos de upload e cache
+uploads/
+cache/
+tmp/
+temp/
+
+# Backups de banco de dados
+*.sql.bak
+*.sql.backup
+backup/
+backups/
+
+# Arquivos compilados
+*.min.css
+*.min.js
+dist/
+build/
+
+# Logs específicos do servidor
+error.log
+access.log
+php_errors.log
+
+# Arquivos de sessão PHP
+sessions/
+tmp/sessions/
+
+# Arquivos específicos do XAMPP
+.htaccess.bak
+
+# Arquivos de desenvolvimento/teste local
+tests/
+test_data/
+dev_notes/
+local_config/
