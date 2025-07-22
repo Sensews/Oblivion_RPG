@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Campanhas - Oblivion RPG</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/campaigns.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Verificação de Autenticação Imediata -->
+    <script>
+        (function() {
+            // Verificação imediata de autenticação antes de carregar o conteúdo
+            let userSession = localStorage.getItem('oblivion_user_session');
+            if (!userSession) {
+                userSession = sessionStorage.getItem('oblivion_user_session');
+            }
+            
+            if (!userSession) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const sessionData = JSON.parse(userSession);
+                
+                // Verificar se a sessão tem os campos obrigatórios
+                if (!sessionData || !sessionData.user_id || !sessionData.token || !sessionData.expires_at) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Verificar se a sessão não expirou
+                const now = new Date().getTime();
+                const expiresAt = new Date(sessionData.expires_at).getTime();
+                
+                if (now >= expiresAt) {
+                    localStorage.removeItem('oblivion_user_session');
+                    sessionStorage.removeItem('oblivion_user_session');
+                    localStorage.removeItem('userSession');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Sessão válida - permitir carregamento da página
+                
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+        })();
+    </script>
+</head>
+<body style="opacity: 0; transition: opacity 0.3s ease;">
+    <!-- Header/Navbar -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo clickable" id="logoHome">
+                    <i class="fas fa-dragon"></i>
+                    <h1>Oblivion RPG</h1>
+                </div>
+            </div>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#" class="nav-link active"><i class="fas fa-gamepad"></i> Gerenciar Campanhas</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn-settings" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="dashboard-main">
+        <div class="dashboard-content">
+            <div class="page-header">
+                <h1><i class="fas fa-gamepad"></i> Gerenciar Campanhas</h1>
+                <p>Crie e gerencie suas campanhas de RPG</p>
+            </div>
+
+            <div class="campaigns-grid">
+                <!-- Container para o botão de criar centralizado -->
+                <div class="create-campaign-container">
+                    <div class="campaign-card create-new" id="createCampaignBtn">
+                        <div class="create-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <h3>Criar Nova Campanha</h3>
+                        <p>Comece uma nova aventura épica</p>
+                    </div>
+                </div>
+
+                <!-- Container para campanhas existentes com scroll -->
+                <div class="existing-campaigns-container">
+                    <div class="existing-campaigns-grid" id="existingCampaigns">
+                        <!-- Campanhas existentes serão carregadas aqui via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Configurações -->
+    <div class="settings-modal" id="settingsModal" style="display: none;">
+        <div class="modal-backdrop" id="settingsBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Configurações</h2>
+                <button class="modal-close" id="closeSettings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Tema -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-palette"></i>
+                        <label>Tema</label>
+                    </div>
+                    <div class="theme-toggle">
+                        <input type="radio" id="darkMode" name="theme" value="dark" checked>
+                        <label for="darkMode">
+                            <i class="fas fa-moon"></i>
+                            Modo Escuro
+                        </label>
+                        <input type="radio" id="lightMode" name="theme" value="light">
+                        <label for="lightMode">
+                            <i class="fas fa-sun"></i>
+                            Modo Claro
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Cor Secundária -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-palette"></i>
+                        <label>Cor Secundária</label>
+                    </div>
+                    <div class="color-picker-container">
+                        <div class="color-preview" id="colorPreview"></div>
+                        <input type="color" id="secondaryColorPicker" value="#ff6b35">
+                        <div class="color-presets">
+                            <button class="color-preset" data-color="#ff6b35" style="background-color: #ff6b35;"></button>
+                            <button class="color-preset" data-color="#4ecdc4" style="background-color: #4ecdc4;"></button>
+                            <button class="color-preset" data-color="#45b7d1" style="background-color: #45b7d1;"></button>
+                            <button class="color-preset" data-color="#96ceb4" style="background-color: #96ceb4;"></button>
+                            <button class="color-preset" data-color="#feca57" style="background-color: #feca57;"></button>
+                            <button class="color-preset" data-color="#ff9ff3" style="background-color: #ff9ff3;"></button>
+                            <button class="color-preset" data-color="#54a0ff" style="background-color: #54a0ff;"></button>
+                            <button class="color-preset" data-color="#5f27cd" style="background-color: #5f27cd;"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-reset" id="resetSettings">
+                    <i class="fas fa-undo"></i>
+                    Restaurar Padrão
+                </button>
+                <button class="btn-save" id="saveSettings">
+                    <i class="fas fa-save"></i>
+                    Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Criar/Editar Campanha -->
+    <div class="campaign-modal" id="campaignModal" style="display: none;">
+        <div class="modal-backdrop" id="campaignBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="campaignModalTitle"><i class="fas fa-plus"></i> Criar Nova Campanha</h2>
+                <button class="modal-close" id="closeCampaignModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="campaignForm">
+                    <input type="hidden" id="campaignId" value="">
+                    
+                    <div class="form-group">
+                        <label for="campaignName">Nome da Campanha</label>
+                        <input type="text" id="campaignName" name="nome" required maxlength="150" placeholder="Digite o nome da campanha">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="campaignDescription">Descrição</label>
+                        <textarea id="campaignDescription" name="descricao" rows="4" placeholder="Descreva sua campanha (opcional)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="campaignImage">URL da Imagem</label>
+                        <input type="url" id="campaignImage" name="foto_url" placeholder="https://exemplo.com/imagem.jpg">
+                        <small>Cole a URL de uma imagem para representar sua campanha</small>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" id="cancelCampaign">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="submit" form="campaignForm" class="btn-save" id="saveCampaign">
+                    <i class="fas fa-save"></i>
+                    Salvar Campanha
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Delete -->
+    <div class="delete-modal" id="deleteModal" style="display: none;">
+        <div class="modal-backdrop" id="deleteBackdrop"></div>
+        <div class="modal-content delete-content">
+            <div class="modal-header delete-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
+            </div>
+
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a campanha <strong id="deleteCampaignName"></strong>?</p>
+                <p class="warning-text">Esta ação não pode ser desfeita!</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" id="cancelDelete">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn-delete" id="confirmDelete">
+                    <i class="fas fa-trash"></i>
+                    Excluir Campanha
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script/dashboard.js"></script>
+    <script src="../script/campaigns.js"></script>
+
+    <script>
+        // Mostrar a página após carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Oblivion RPG</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Verificação de Autenticação Imediata -->
+    <script>
+        (function() {
+            // Verificação imediata de autenticação antes de carregar o conteúdo
+            let userSession = localStorage.getItem('oblivion_user_session');
+            if (!userSession) {
+                userSession = sessionStorage.getItem('oblivion_user_session');
+            }
+            
+            if (!userSession) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const sessionData = JSON.parse(userSession);
+                
+                // Verificar se a sessão tem os campos obrigatórios
+                if (!sessionData || !sessionData.user_id || !sessionData.token || !sessionData.expires_at) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Verificar se a sessão não expirou
+                const now = new Date().getTime();
+                const expiresAt = new Date(sessionData.expires_at).getTime();
+                
+                if (now >= expiresAt) {
+                    localStorage.removeItem('oblivion_user_session');
+                    sessionStorage.removeItem('oblivion_user_session');
+                    localStorage.removeItem('userSession');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Sessão válida - permitir carregamento da página
+                
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+        })();
+    </script>
+</head>
+<body style="opacity: 0; transition: opacity 0.3s ease;">
+    <!-- Header/Navbar -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo clickable" id="logoHome">
+                    <i class="fas fa-dragon"></i>
+                    <h1>Oblivion RPG</h1>
+                </div>
+            </div>
+
+            <nav class="main-nav" id="mainNav">
+                <ul>
+                    <li><a href="#" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <!-- Navegação dinâmica baseada no tipo de usuário -->
+                    <li id="dynamicNavItem" style="display: none;">
+                        <a href="#" class="nav-link" id="dynamicNavLink">
+                            <i class="fas fa-gamepad" id="dynamicNavIcon"></i>
+                            <span id="dynamicNavText">Gerenciar</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn-role-toggle" id="roleToggleBtn" title="Alternar entre Mestre e Jogador">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span id="currentRoleText">Jogador</span>
+                </button>
+                <button class="btn-settings" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="dashboard-main">
+        <div class="dashboard-content">
+            <div class="welcome-section">
+                <h1>Bem-vindo ao seu Dashboard</h1>
+                <p>Sua jornada épica continua aqui...</p>
+            </div>
+
+            <!-- Placeholder para futuro conteúdo -->
+            <div class="content-grid">
+                <div class="content-card">
+                    <h3><i class="fas fa-chart-line"></i> Estatísticas</h3>
+                    <p>Em breve...</p>
+                </div>
+                <div class="content-card">
+                    <h3><i class="fas fa-scroll"></i> Campanhas Recentes</h3>
+                    <p>Em breve...</p>
+                </div>
+                <div class="content-card">
+                    <h3><i class="fas fa-users"></i> Grupos Ativos</h3>
+                    <p>Em breve...</p>
+                </div>
+                <div class="content-card">
+                    <h3><i class="fas fa-trophy"></i> Conquistas</h3>
+                    <p>Em breve...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Configurações -->
+    <div class="settings-modal" id="settingsModal" style="display: none;">
+        <div class="modal-backdrop" id="settingsBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Configurações</h2>
+                <button class="modal-close" id="closeSettings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Modo Escuro/Claro -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-moon"></i>
+                        <label>Tema da Interface</label>
+                    </div>
+                    <div class="theme-toggle">
+                        <input type="radio" id="darkMode" name="theme" value="dark" checked>
+                        <label for="darkMode">
+                            <i class="fas fa-moon"></i>
+                            Modo Escuro
+                        </label>
+                        <input type="radio" id="lightMode" name="theme" value="light">
+                        <label for="lightMode">
+                            <i class="fas fa-sun"></i>
+                            Modo Claro
+                        </label>
+                    </div>
+                </div>
+
+
+
+                <!-- Cor Secundária -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-palette"></i>
+                        <label>Cor Secundária</label>
+                    </div>
+                    <div class="color-picker-container">
+                        <div class="color-preview" id="colorPreview"></div>
+                        <input type="color" id="secondaryColorPicker" value="#ff6b35">
+                        <div class="color-presets">
+                            <button class="color-preset" data-color="#ff6b35" style="background-color: #ff6b35;"></button>
+                            <button class="color-preset" data-color="#4ecdc4" style="background-color: #4ecdc4;"></button>
+                            <button class="color-preset" data-color="#45b7d1" style="background-color: #45b7d1;"></button>
+                            <button class="color-preset" data-color="#96ceb4" style="background-color: #96ceb4;"></button>
+                            <button class="color-preset" data-color="#feca57" style="background-color: #feca57;"></button>
+                            <button class="color-preset" data-color="#ff9ff3" style="background-color: #ff9ff3;"></button>
+                            <button class="color-preset" data-color="#54a0ff" style="background-color: #54a0ff;"></button>
+                            <button class="color-preset" data-color="#5f27cd" style="background-color: #5f27cd;"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-reset" id="resetSettings">
+                    <i class="fas fa-undo"></i>
+                    Restaurar Padrão
+                </button>
+                <button class="btn-save" id="saveSettings">
+                    <i class="fas fa-save"></i>
+                    Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script/dashboard.js"></script>
+
+    <script>
+        // Mostrar a página após carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
+</html>
