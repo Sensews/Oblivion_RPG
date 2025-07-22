@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Oblivion RPG</title>
+    <link rel="stylesheet" href="../styles/register.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="register-card">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-dragon"></i>
+                    <h1>Oblivion RPG</h1>
+                </div>
+                <p class="subtitle">Crie sua conta e comece sua jornada</p>
+            </div>
+
+            <form id="registerForm" class="register-form">
+                <div class="form-group">
+                    <label for="username">Nome de Usuário</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" placeholder="Seu nome de usuário" required>
+                    </div>
+                    <span class="error-message" id="username-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                    </div>
+                    <span class="error-message" id="email-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Sua senha" required>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText">Digite uma senha</div>
+                    </div>
+                    <span class="error-message" id="password-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Senha</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" required>
+                        <button type="button" class="toggle-password" id="toggleConfirmPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="error-message" id="confirm-password-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="profileType">Tipo de Perfil</label>
+                    <div class="profile-options">
+                        <label class="radio-option">
+                            <input type="radio" name="profileType" value="jogador" checked>
+                            <span class="radio-custom"></span>
+                            <div class="radio-content">
+                                <i class="fas fa-gamepad"></i>
+                                <span>Jogador</span>
+                            </div>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="profileType" value="mestre">
+                            <span class="radio-custom"></span>
+                            <div class="radio-content">
+                                <i class="fas fa-crown"></i>
+                                <span>Mestre</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span class="btn-text">Criar Conta</span>
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                </button>
+
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Conta criada com sucesso!</span>
+                </div>
+
+                <div class="error-message general-error" id="generalError"></div>
+            </form>
+
+            <div class="footer">
+                <p>Já tem uma conta? <a href="login.html">Entre aqui</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script/register.js"></script>
+</body>
+</html>
