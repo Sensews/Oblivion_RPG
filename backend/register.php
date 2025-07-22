@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 require_once 'config/database.php';
 require_once 'services/VerificationService.php';
+require_once 'services/PasswordSecurity.php';
 
 /**
  * Classe para gerenciar o registro de usuários
@@ -154,20 +155,13 @@ class UserRegistration {
             ];
         }
         
-        if (strlen($data['password']) < 6) {
+        // Usar validação robusta de senha
+        $passwordValidation = PasswordSecurity::validatePasswordStrength($data['password']);
+        if (!$passwordValidation['valid']) {
             return [
                 'valid' => false,
                 'success' => false,
-                'message' => 'Senha deve ter pelo menos 6 caracteres',
-                'field' => 'password'
-            ];
-        }
-        
-        if (!preg_match('/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', $data['password'])) {
-            return [
-                'valid' => false,
-                'success' => false,
-                'message' => 'Senha deve conter pelo menos uma letra minúscula, uma maiúscula e um número',
+                'message' => implode('; ', $passwordValidation['errors']),
                 'field' => 'password'
             ];
         }
@@ -197,7 +191,8 @@ class UserRegistration {
      * Cria um novo usuário provisório no banco de dados
      */
     private function createProvisionalUser($data) {
-        $passwordHash = password_hash($data['password'], PASSWORD_ARGON2ID);
+        // Usar classe de segurança para hash da senha
+        $passwordHash = PasswordSecurity::hashPassword($data['password']);
         
         $stmt = $this->pdo->prepare('
             INSERT INTO usuarios (nome_usuario, email, senha_hash, tipo_perfil, criado_provisorio, email_verificado, criado_em) 

@@ -168,16 +168,7 @@ class RegisterForm {
             return false;
         }
         
-        if (password.length < 6) {
-            this.showFieldError('password', 'Senha deve ter pelo menos 6 caracteres');
-            return false;
-        }
-        
-        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-            this.showFieldError('password', 'Senha deve conter pelo menos uma letra minúscula, uma maiúscula e um número');
-            return false;
-        }
-        
+        // Validação detalhada será feita pelo backend
         this.clearFieldError('password');
         return true;
     }
@@ -237,71 +228,42 @@ class RegisterForm {
     }
     
     /**
-     * Calcula a força da senha
+     * Calcula a força da senha (versão simplificada - apenas visual)
      */
     calculatePasswordStrength(password) {
         let score = 0;
-        let feedback = [];
+        const length = password.length;
         
-        // Critérios de pontuação
-        if (password.length >= 8) {
-            score += 25;
-        } else {
-            feedback.push('pelo menos 8 caracteres');
-        }
+        // Critérios básicos apenas para feedback visual
+        if (length >= 6) score += 25;
+        if (length >= 8) score += 15;
+        if (length >= 12) score += 10;
         
-        if (/[a-z]/.test(password)) {
-            score += 15;
-        } else {
-            feedback.push('letras minúsculas');
-        }
+        if (/[a-z]/.test(password)) score += 15;
+        if (/[A-Z]/.test(password)) score += 15;
+        if (/\d/.test(password)) score += 10;
+        if (/[^a-zA-Z\d]/.test(password)) score += 10;
         
-        if (/[A-Z]/.test(password)) {
-            score += 15;
-        } else {
-            feedback.push('letras maiúsculas');
-        }
-        
-        if (/\d/.test(password)) {
-            score += 15;
-        } else {
-            feedback.push('números');
-        }
-        
-        if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-            score += 20;
-            feedback = feedback.filter(item => item !== 'caracteres especiais');
-        } else {
-            feedback.push('caracteres especiais');
-        }
-        
-        // Bonificações
-        if (password.length >= 12) score += 10;
-        if (/(.)\1{2,}/.test(password)) score -= 15; // Penaliza repetições
-        if (/012|123|234|345|456|567|678|789|890|abc|bcd|cde|def/.test(password.toLowerCase())) {
-            score -= 10; // Penaliza sequências
-        }
-        
-        // Determinar nível e texto
-        if (score < 30) {
+        // Determinar nível visual (validação real será no backend)
+        if (score < 40) {
             return {
                 level: 'weak',
-                text: `Fraca - Adicione: ${feedback.slice(0, 2).join(', ')}`
+                text: 'Fraca - Adicione mais caracteres'
             };
-        } else if (score < 60) {
+        } else if (score < 70) {
             return {
                 level: 'fair',
-                text: feedback.length > 0 ? `Regular - Adicione: ${feedback.slice(0, 1).join(', ')}` : 'Regular'
+                text: 'Regular - Pode melhorar'
             };
-        } else if (score < 85) {
+        } else if (score < 90) {
             return {
                 level: 'good',
-                text: 'Boa - Senha segura'
+                text: 'Boa - Senha forte'
             };
         } else {
             return {
                 level: 'strong',
-                text: 'Forte - Excelente segurança!'
+                text: 'Excelente - Muito segura!'
             };
         }
     }
