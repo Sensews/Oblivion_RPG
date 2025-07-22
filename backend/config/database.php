@@ -19,7 +19,14 @@ class Config {
                 'app_debug' => $_ENV['APP_DEBUG'] === 'true',
                 'app_url' => $_ENV['APP_URL'] ?? '',
                 'jwt_secret' => $_ENV['JWT_SECRET'] ?? 'default_secret',
-                'hash_algo' => $_ENV['HASH_ALGO'] ?? PASSWORD_DEFAULT
+                'hash_algo' => $_ENV['HASH_ALGO'] ?? PASSWORD_DEFAULT,
+                'mail_host' => $_ENV['MAIL_HOST'] ?? 'localhost',
+                'mail_port' => $_ENV['MAIL_PORT'] ?? 587,
+                'mail_username' => $_ENV['MAIL_USERNAME'] ?? '',
+                'mail_password' => $_ENV['MAIL_PASSWORD'] ?? '',
+                'mail_from_email' => $_ENV['MAIL_FROM_EMAIL'] ?? '',
+                'mail_from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Oblivion RPG',
+                'mail_encryption' => $_ENV['MAIL_ENCRYPTION'] ?? 'tls'
             ];
         }
         return self::$config;

@@ -1,4 +1,6 @@
-# Arquivos do sistema operacional
+# === OBLIVION RPG - .gitignore ===
+
+# Arquivos do Sistema Operacional
 .DS_Store
 .DS_Store?
 ._*
@@ -6,69 +8,88 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
 
-# Arquivos temporários e de log
-*.log
-*.tmp
-*.temp
-*.cache
-*.swp
-*.swo
-*~
-
-# Configurações do IDE/Editor
+# IDEs e Editores
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
 .project
 .metadata
+*.swp
+*.swo
+*~
+.phpstorm.meta.php
 
-# Dependências e packages
+# Dependências e Packages
 node_modules/
 vendor/
 bower_components/
+composer.phar
 
-# Arquivos de configuração sensíveis
-config/database.php
-config/config.php
+# Configurações Sensíveis
 .env
 .env.local
 .env.production
 .env.staging
+.env.testing
+.env.backup
+!.env.example
 
-# Arquivos de upload e cache
-uploads/
-cache/
-tmp/
-temp/
-
-# Backups de banco de dados
-*.sql.bak
-*.sql.backup
-backup/
-backups/
-
-# Arquivos compilados
-*.min.css
-*.min.js
-dist/
-build/
-
-# Logs específicos do servidor
+# Logs e Temporários
+*.log
+*.tmp
+*.temp
+*.cache
 error.log
 access.log
 php_errors.log
+debug.log
+logs/
 
-# Arquivos de sessão PHP
+# Cache e Sessões PHP
+cache/
+tmp/
+temp/
 sessions/
-tmp/sessions/
+storage/
 
-# Arquivos específicos do XAMPP
-.htaccess.bak
+# Uploads e Mídia
+uploads/
+storage/uploads/
+public/uploads/
+assets/uploads/
 
-# Arquivos de desenvolvimento/teste local
+# Backups de Banco de Dados
+*.sql.bak
+*.sql.backup
+*.sql.gz
+backup/
+backups/
+database/backups/
+
+# Arquivos Compilados/Minificados
+*.min.css
+*.min.js
+*.min.map
+dist/
+build/
+public/build/
+frontend/dist/
+
+# Arquivos de Desenvolvimento e Teste
+test_email.php
+debug.php
+test_*.php
+phpinfo.php
 tests/
-test_data/
-dev_notes/
-local_config/
+
+# Específicos do XAMPP/WAMP
+.htaccess.bak
+.htpasswd
+
+# Arquivos de Configuração Local (manter apenas exemplos)
+config/database.php
+!config/database.example.php

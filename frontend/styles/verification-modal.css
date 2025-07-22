@@ -1,0 +1,407 @@
+/**
+ * Estilos para o Modal de Verificação de Email
+ */
+
+/* Modal de Verificação */
+.verification-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.verification-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    position: relative;
+    background: linear-gradient(135deg, var(--surface-color) 0%, #2d3748 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(139, 92, 246, 0.2);
+    width: 90%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.verification-modal.show .modal-content {
+    transform: scale(1) translateY(0);
+}
+
+/* Header do Modal */
+.modal-header {
+    padding: 2rem 2rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+    position: relative;
+}
+
+.modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+}
+
+.modal-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-family: 'Orbitron', monospace;
+}
+
+.modal-header h2 i {
+    color: var(--accent-color);
+    font-size: 1.5rem;
+}
+
+.modal-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.email-display {
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 1.1rem;
+    word-break: break-all;
+    background: rgba(6, 182, 212, 0.1);
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-top: 10px;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+/* Body do Modal */
+.modal-body {
+    padding: 2rem;
+}
+
+.verification-input-container {
+    margin-bottom: 1.5rem;
+}
+
+.verification-input-container label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.verification-input {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.8);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 8px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+}
+
+.verification-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    background: rgba(6, 182, 212, 0.05);
+}
+
+.verification-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.input-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.input-hint i {
+    color: var(--accent-color);
+}
+
+#timeRemaining {
+    color: var(--accent-color);
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+}
+
+#timeRemaining.warning {
+    color: var(--error-color);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Erro de Verificação */
+.verification-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    display: none;
+    animation: shake 0.5s ease-in-out;
+}
+
+.verification-error.show {
+    display: block;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Ações do Modal */
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.btn-verify {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-verify:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #6b21a8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+}
+
+.btn-verify:active {
+    transform: translateY(0);
+}
+
+.btn-verify:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-verify.loading {
+    pointer-events: none;
+}
+
+.btn-verify.loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.secondary-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.btn-resend,
+.btn-cancel {
+    flex: 1;
+    padding: 0.8rem 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: rgba(30, 41, 59, 0.8);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-resend:hover {
+    background: rgba(6, 182, 212, 0.1);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.btn-cancel:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--error-color);
+    color: var(--error-color);
+}
+
+.btn-resend:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Footer do Modal */
+.modal-footer {
+    padding: 1rem 2rem 2rem;
+    border-top: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.help-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.help-text i {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+}
+
+/* Estados de Sucesso */
+.verification-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #86efac;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    display: none;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.verification-success.show {
+    display: block;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 640px) {
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .verification-input {
+        font-size: 1.5rem;
+        letter-spacing: 4px;
+        padding: 0.8rem;
+    }
+    
+    .secondary-actions {
+        flex-direction: column;
+    }
+    
+    .email-display {
+        font-size: 1rem;
+        word-break: break-all;
+    }
+}
+
+/* Animação de entrada do modal */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.verification-modal.show .modal-content {
+    animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevenção de scroll no body quando modal está aberto */
+body.modal-open {
+    overflow: hidden;
+}

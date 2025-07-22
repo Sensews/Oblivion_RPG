@@ -12,15 +12,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_once 'config/database.php';
+require_once 'services/VerificationService.php';
 
 /**
  * Classe para gerenciar o registro de usuários
  */
 class UserRegistration {
     private $pdo;
+    private $verificationService;
     
     public function __construct($pdo) {
         $this->pdo = $pdo;
+        $this->verificationService = new VerificationService();
     }
     
     /**
@@ -43,13 +46,31 @@ class UserRegistration {
                 ];
             }
             
-            // Criar usuário
-            $userId = $this->createUser($data);
+            // Criar usuário provisório
+            $userId = $this->createProvisionalUser($data);
+            
+            // Enviar código de verificação
+            $emailResult = $this->verificationService->enviarCodigoVerificacao(
+                $userId,
+                $data['email'],
+                $data['username']
+            );
+            
+            if (!$emailResult['success']) {
+                // Se falhou ao enviar email, remove o usuário
+                $this->removeUser($userId);
+                return [
+                    'success' => false,
+                    'message' => 'Erro ao enviar email de verificação. Tente novamente.'
+                ];
+            }
             
             return [
                 'success' => true,
-                'message' => 'Usuário criado com sucesso',
-                'user_id' => $userId
+                'message' => 'Conta criada! Verifique seu email e digite o código de verificação.',
+                'user_id' => $userId,
+                'verification_required' => true,
+                'email' => $data['email']
             ];
             
         } catch (Exception $e) {
@@ -173,14 +194,14 @@ class UserRegistration {
     }
     
     /**
-     * Cria um novo usuário no banco de dados
+     * Cria um novo usuário provisório no banco de dados
      */
-    private function createUser($data) {
+    private function createProvisionalUser($data) {
         $passwordHash = password_hash($data['password'], PASSWORD_ARGON2ID);
         
         $stmt = $this->pdo->prepare('
-            INSERT INTO usuarios (nome_usuario, email, senha_hash, tipo_perfil, criado_em) 
-            VALUES (?, ?, ?, ?, NOW())
+            INSERT INTO usuarios (nome_usuario, email, senha_hash, tipo_perfil, criado_provisorio, email_verificado, criado_em) 
+            VALUES (?, ?, ?, ?, TRUE, FALSE, NOW())
         ');
         
         $stmt->execute([
@@ -191,6 +212,18 @@ class UserRegistration {
         ]);
         
         return $this->pdo->lastInsertId();
+    }
+    
+    /**
+     * Remove usuário do banco
+     */
+    private function removeUser($userId) {
+        try {
+            $stmt = $this->pdo->prepare('DELETE FROM usuarios WHERE id = ?');
+            $stmt->execute([$userId]);
+        } catch (Exception $e) {
+            error_log('Erro ao remover usuário: ' . $e->getMessage());
+        }
     }
 }
 

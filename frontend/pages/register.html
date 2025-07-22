@@ -5,12 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Oblivion RPG</title>
     <link rel="stylesheet" href="../styles/register.css">
+    <link rel="stylesheet" href="../styles/dice-background.css">
+    <link rel="stylesheet" href="../styles/verification-modal.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Partículas mágicas de fundo -->
+    <div class="magic-particles"></div>
+
     <div class="container">
         <div class="register-card">
             <div class="header">
@@ -113,6 +118,90 @@
         </div>
     </div>
 
+    <!-- Modal de Verificação de Email -->
+    <div class="verification-modal" id="verificationModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-envelope-open"></i>
+                    Verificar Email
+                </h2>
+                <p class="modal-subtitle">Enviamos um código de 6 dígitos para:</p>
+                <p class="email-display" id="emailDisplay"></p>
+            </div>
+            
+            <div class="modal-body">
+                <div class="verification-input-container">
+                    <label for="verificationCode">Código de Verificação</label>
+                    <input 
+                        type="text" 
+                        id="verificationCode" 
+                        maxlength="6" 
+                        placeholder="000000"
+                        class="verification-input"
+                        autocomplete="off"
+                    >
+                    <div class="input-hint">
+                        <i class="fas fa-clock"></i>
+                        O código expira em <span id="timeRemaining">15:00</span>
+                    </div>
+                </div>
+                
+                <div class="verification-error" id="verificationError"></div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-verify" id="btnVerify">
+                        <i class="fas fa-check"></i>
+                        Confirmar Código
+                    </button>
+                    
+                    <div class="secondary-actions">
+                        <button type="button" class="btn-resend" id="btnResend">
+                            <i class="fas fa-paper-plane"></i>
+                            Reenviar Código
+                        </button>
+                        
+                        <button type="button" class="btn-cancel" id="btnCancel">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="help-text">
+                    <i class="fas fa-info-circle"></i>
+                    Não recebeu o email? Verifique sua caixa de spam ou clique em "Reenviar Código"
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../script/register.js"></script>
+    <!-- Scripts do sistema 3D de dados -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://kripken.github.io/ammo.js/builds/ammo.wasm.js"></script>
+    <script src="../script/dice-background-simple.js"></script>
+    <script>
+        // Aguarda o carregamento completo da página e das bibliotecas
+        window.addEventListener('load', () => {
+            // Aguarda o carregamento da física antes de iniciar
+            Ammo().then(() => {
+                console.log('✅ Ammo.js carregado');
+                if (window.DiceBackground) {
+                    console.log('✅ DiceBackground disponível');
+                    window.diceBackground = new window.DiceBackground();
+                    window.diceBackground.init();
+                } else {
+                    console.error('❌ DiceBackground não encontrado');
+                }
+            }).catch(error => {
+                console.error('❌ Erro ao carregar Ammo.js:', error);
+            });
+        });
+    </script>
 </body>
 </html>

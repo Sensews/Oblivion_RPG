@@ -1,0 +1,21 @@
+{
+    "name": "oblivion-rpg/backend",
+    "description": "Backend do sistema Oblivion RPG",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "phpmailer/phpmailer": "^6.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "OblivionRPG\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Oblivion RPG Team",
+            "email": "support-oblivion@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}

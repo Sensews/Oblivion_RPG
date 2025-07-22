@@ -11,6 +11,9 @@ class RegisterForm {
         this.strengthFill = document.getElementById('strengthFill');
         this.strengthText = document.getElementById('strengthText');
         
+        // Modal de verificação
+        this.verificationModal = new VerificationModal();
+        
         this.fields = {
             username: document.getElementById('username'),
             email: document.getElementById('email'),
@@ -413,7 +416,12 @@ class RegisterForm {
             const result = await response.json();
             
             if (result.success) {
-                this.showSuccess();
+                if (result.verification_required) {
+                    // Mostrar modal de verificação
+                    this.verificationModal.show(result.user_id, result.email);
+                } else {
+                    this.showSuccess();
+                }
             } else {
                 if (result.field) {
                     this.showFieldError(result.field, result.message);
@@ -426,6 +434,320 @@ class RegisterForm {
             this.showGeneralError('Erro de conexão. Verifique sua internet e tente novamente.');
         } finally {
             this.setLoading(false);
+        }
+    }
+}
+
+/**
+ * Classe para gerenciar o modal de verificação de email
+ */
+class VerificationModal {
+    constructor() {
+        this.modal = document.getElementById('verificationModal');
+        this.emailDisplay = document.getElementById('emailDisplay');
+        this.verificationCodeInput = document.getElementById('verificationCode');
+        this.verificationError = document.getElementById('verificationError');
+        this.timeRemaining = document.getElementById('timeRemaining');
+        
+        this.btnVerify = document.getElementById('btnVerify');
+        this.btnResend = document.getElementById('btnResend');
+        this.btnCancel = document.getElementById('btnCancel');
+        
+        this.userId = null;
+        this.email = '';
+        this.countdownTimer = null;
+        this.expirationTime = null;
+        
+        this.setupEventListeners();
+    }
+    
+    setupEventListeners() {
+        // Verificar código
+        this.btnVerify.addEventListener('click', () => this.verifyCode());
+        
+        // Reenviar código
+        this.btnResend.addEventListener('click', () => this.resendCode());
+        
+        // Cancelar
+        this.btnCancel.addEventListener('click', () => this.cancel());
+        
+        // Enter no input de código
+        this.verificationCodeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.verifyCode();
+            }
+        });
+        
+        // Formatar input de código (apenas números)
+        this.verificationCodeInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 6) value = value.slice(0, 6);
+            e.target.value = value;
+            
+            // Auto-verificar quando chegar a 6 dígitos
+            if (value.length === 6) {
+                setTimeout(() => this.verifyCode(), 500);
+            }
+        });
+        
+        // Fechar modal ao clicar no backdrop
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal || e.target.classList.contains('modal-backdrop')) {
+                this.cancel();
+            }
+        });
+        
+        // ESC para fechar
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.modal.classList.contains('show')) {
+                this.cancel();
+            }
+        });
+    }
+    
+    show(userId, email) {
+        this.userId = userId;
+        this.email = email;
+        this.emailDisplay.textContent = email;
+        
+        // Mostrar modal
+        this.modal.classList.add('show');
+        document.body.classList.add('modal-open');
+        
+        // Focar no input
+        setTimeout(() => {
+            this.verificationCodeInput.focus();
+        }, 300);
+        
+        // Iniciar countdown
+        this.startCountdown();
+        
+        // Limpar campos
+        this.clearMessages();
+        this.verificationCodeInput.value = '';
+    }
+    
+    hide() {
+        this.modal.classList.remove('show');
+        document.body.classList.remove('modal-open');
+        
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
+        }
+    }
+    
+    async verifyCode() {
+        const code = this.verificationCodeInput.value.trim();
+        
+        if (code.length !== 6) {
+            this.showError('Por favor, digite o código de 6 dígitos');
+            return;
+        }
+        
+        this.setVerifyLoading(true);
+        this.clearMessages();
+        
+        try {
+            const response = await fetch('../../backend/verify.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'verify',
+                    user_id: this.userId,
+                    code: code
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showSuccess('Email verificado com sucesso!');
+                
+                setTimeout(() => {
+                    this.hide();
+                    // Mostrar mensagem de sucesso na página principal
+                    const registerForm = document.querySelector('.register-form');
+                    if (registerForm) {
+                        const successMessage = document.getElementById('successMessage');
+                        if (successMessage) {
+                            successMessage.textContent = 'Conta criada e verificada com sucesso! Redirecionando...';
+                            successMessage.classList.add('show');
+                        }
+                    }
+                    
+                    // Redirecionar para login após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }, 1500);
+                
+            } else {
+                if (result.expired) {
+                    this.showError(result.message);
+                    setTimeout(() => {
+                        this.hide();
+                        window.location.reload();
+                    }, 3000);
+                } else {
+                    this.showError(result.message || 'Código incorreto. Tente novamente.');
+                    this.verificationCodeInput.value = '';
+                    this.verificationCodeInput.focus();
+                }
+            }
+            
+        } catch (error) {
+            console.error('Erro ao verificar código:', error);
+            this.showError('Erro de conexão. Tente novamente.');
+        } finally {
+            this.setVerifyLoading(false);
+        }
+    }
+    
+    async resendCode() {
+        this.setResendLoading(true);
+        this.clearMessages();
+        
+        try {
+            const response = await fetch('../../backend/verify.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'resend',
+                    user_id: this.userId
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showSuccess('Novo código enviado! Verifique seu email.');
+                this.verificationCodeInput.value = '';
+                this.startCountdown(); // Reiniciar countdown
+            } else {
+                this.showError(result.message || 'Erro ao reenviar código. Tente novamente.');
+            }
+            
+        } catch (error) {
+            console.error('Erro ao reenviar código:', error);
+            this.showError('Erro de conexão. Tente novamente.');
+        } finally {
+            this.setResendLoading(false);
+        }
+    }
+    
+    async cancel() {
+        if (confirm('Tem certeza que deseja cancelar o registro? Sua conta será removida.')) {
+            try {
+                await fetch('../../backend/verify.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'cancel',
+                        user_id: this.userId
+                    })
+                });
+            } catch (error) {
+                console.error('Erro ao cancelar registro:', error);
+            }
+            
+            this.hide();
+            window.location.reload();
+        }
+    }
+    
+    startCountdown() {
+        // 15 minutos em segundos
+        let timeLeft = 15 * 60;
+        
+        this.updateTimeDisplay(timeLeft);
+        
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+        }
+        
+        this.countdownTimer = setInterval(() => {
+            timeLeft--;
+            this.updateTimeDisplay(timeLeft);
+            
+            if (timeLeft <= 0) {
+                clearInterval(this.countdownTimer);
+                this.showError('Código expirado. A conta foi removida.');
+                setTimeout(() => {
+                    this.hide();
+                    window.location.reload();
+                }, 3000);
+            }
+        }, 1000);
+    }
+    
+    updateTimeDisplay(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        const display = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        
+        this.timeRemaining.textContent = display;
+        
+        // Adicionar classe de warning quando restam menos de 2 minutos
+        if (seconds <= 120) {
+            this.timeRemaining.classList.add('warning');
+        } else {
+            this.timeRemaining.classList.remove('warning');
+        }
+    }
+    
+    showError(message) {
+        this.verificationError.textContent = message;
+        this.verificationError.classList.add('show');
+    }
+    
+    showSuccess(message) {
+        // Criar elemento de sucesso se não existir
+        let successElement = document.querySelector('.verification-success');
+        if (!successElement) {
+            successElement = document.createElement('div');
+            successElement.className = 'verification-success';
+            this.verificationError.parentNode.insertBefore(successElement, this.verificationError);
+        }
+        
+        successElement.textContent = message;
+        successElement.classList.add('show');
+        this.verificationError.classList.remove('show');
+    }
+    
+    clearMessages() {
+        this.verificationError.classList.remove('show');
+        const successElement = document.querySelector('.verification-success');
+        if (successElement) {
+            successElement.classList.remove('show');
+        }
+    }
+    
+    setVerifyLoading(loading) {
+        if (loading) {
+            this.btnVerify.classList.add('loading');
+            this.btnVerify.disabled = true;
+            this.btnVerify.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+        } else {
+            this.btnVerify.classList.remove('loading');
+            this.btnVerify.disabled = false;
+            this.btnVerify.innerHTML = '<i class="fas fa-check"></i> Confirmar Código';
+        }
+    }
+    
+    setResendLoading(loading) {
+        if (loading) {
+            this.btnResend.disabled = true;
+            this.btnResend.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        } else {
+            this.btnResend.disabled = false;
+            this.btnResend.innerHTML = '<i class="fas fa-paper-plane"></i> Reenviar Código';
         }
     }
 }

@@ -1,0 +1,261 @@
+/**
+ * Estilos para o Sistema de Dados 3D no Background
+ */
+
+/* Canvas de fundo dos dados 3D */
+#dice-background-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+#dice-background-canvas.loaded {
+    opacity: 0.4;
+}
+
+/* Efeitos de sobreposição para melhor integração visual */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.85) 0%,
+        rgba(30, 27, 75, 0.75) 50%,
+        rgba(15, 23, 42, 0.85) 100%
+    );
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Efeito de partículas mágicas */
+.magic-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.magic-particles::before,
+.magic-particles::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.8) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float-particles 10s infinite linear;
+}
+
+.magic-particles::before {
+    top: -10px;
+    left: 20%;
+    animation-delay: -2s;
+    animation-duration: 12s;
+}
+
+.magic-particles::after {
+    top: -10px;
+    left: 80%;
+    animation-delay: -8s;
+    animation-duration: 15s;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.8) 0%, transparent 70%);
+}
+
+@keyframes float-particles {
+    0% {
+        transform: translateY(-10px) translateX(0) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(0) translateX(0) scale(1);
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(calc(100vh - 20px)) translateX(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(calc(100vh + 10px)) translateX(0) scale(0);
+    }
+}
+
+/* Melhorar a visibilidade do formulário sobre o background 3D */
+.register-card {
+    backdrop-filter: blur(15px) saturate(180%);
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(139, 92, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.register-card::before {
+    background: linear-gradient(90deg, 
+        rgba(139, 92, 246, 0.8), 
+        rgba(6, 182, 212, 0.8)
+    );
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+/* Efeito de brilho sutil no logo */
+.logo {
+    position: relative;
+}
+
+.logo::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: radial-gradient(
+        circle at center,
+        rgba(139, 92, 246, 0.2) 0%,
+        transparent 60%
+    );
+    border-radius: 50%;
+    z-index: -1;
+    animation: glow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+/* Controles removidos - sistema totalmente automático */
+
+/* Loading removido - sistema carrega automaticamente */
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    #dice-background-canvas.loaded {
+        opacity: 0.25; /* Menos opacidade no mobile */
+    }
+    
+    body::after {
+        background: linear-gradient(
+            135deg,
+            rgba(15, 23, 42, 0.9) 0%,
+            rgba(30, 27, 75, 0.85) 50%,
+            rgba(15, 23, 42, 0.9) 100%
+        );
+    }
+    
+    .register-card {
+        backdrop-filter: blur(10px) saturate(160%);
+        background: rgba(30, 41, 59, 0.98);
+    }
+}
+
+/* Performance: Reduzir animações em dispositivos com baixa performance */
+@media (prefers-reduced-motion: reduce) {
+    #dice-background-canvas {
+        display: none;
+    }
+    
+    .magic-particles::before,
+    .magic-particles::after {
+        display: none;
+    }
+    
+    .logo::after {
+        animation: none;
+    }
+}
+
+/* Dark mode específico para o sistema de dados */
+@media (prefers-color-scheme: light) {
+    body::after {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(240, 242, 247, 0.85) 50%,
+            rgba(255, 255, 255, 0.9) 100%
+        );
+    }
+}
+
+/* Controles removidos - sistema totalmente automático */
+
+/* Loading removido - sistema carrega automaticamente */
+
+/* Transições suaves para carregamento do sistema 3D */
+#dice-background-canvas {
+    transition: opacity 3s ease-in-out, transform 1s ease;
+}
+
+#dice-background-canvas.initializing {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+#dice-background-canvas.loaded {
+    opacity: 0.4;
+    transform: scale(1);
+}
+
+#dice-background-canvas.error {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+/* Indicador visual de erro no carregamento 3D */
+.dice-error {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.dice-error.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Efeito de fade-in para quando o sistema carrega */
+@keyframes systemFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.system-loaded {
+    animation: systemFadeIn 1s ease-out forwards;
+}
