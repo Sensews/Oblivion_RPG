@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Oblivion RPG</title>
+    <link rel="stylesheet" href="../styles/register-and-login.css">
+    <link rel="stylesheet" href="../styles/verification-modal.css">
+    <link rel="stylesheet" href="../styles/dice-background.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Partículas mágicas de fundo -->
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="register-card">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-dragon"></i>
+                    <h1>Oblivion RPG</h1>
+                </div>
+                <p class="subtitle">Entre em sua conta e continue sua aventura</p>
+            </div>
+
+            <form id="registerForm" class="register-form">
+                <div class="form-group">
+                    <label for="registerField">Email ou Nome de Usuário</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="loginField" name="loginField" placeholder="Digite seu email ou nome de usuário" required>
+                    </div>
+                    <span class="error-message" id="login-field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="error-message" id="password-error"></span>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <span class="checkmark"></span>
+                        Lembrar de mim
+                    </label>
+                    <a href="#" class="forgot-password" id="forgotPasswordLink">Esqueceu a senha?</a>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span class="btn-text">Entrar</span>
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                </button>
+
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Login realizado com sucesso!</span>
+                </div>
+
+                <div class="error-message general-error" id="generalError"></div>
+            </form>
+
+            <div class="footer">
+                <p>Não tem uma conta? <a href="register.html">Registre-se aqui</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Recuperação de Senha -->
+    <div class="recovery-modal" id="recoveryModal" style="display: none;">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-key"></i>
+                    Recuperar Senha
+                </h2>
+                <button type="button" class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <p class="modal-subtitle">Digite seu email para receber o link de recuperação</p>
+            </div>
+            
+            <div class="modal-body">
+                <form id="recoveryForm">
+                    <div class="recovery-input-container">
+                        <label for="recoveryEmail">Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input 
+                                type="email" 
+                                id="recoveryEmail" 
+                                name="recoveryEmail"
+                                placeholder="seu@email.com"
+                                class="recovery-input"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="recovery-error" id="recoveryError"></div>
+                    <div class="recovery-success" id="recoverySuccess"></div>
+                    
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-send" id="btnSendRecovery">
+                            <span class="btn-text">
+                                <i class="fas fa-paper-plane"></i>
+                                Enviar Link
+                            </span>
+                            <div class="loading-spinner" id="recoveryLoadingSpinner">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </button>
+                        
+                        <button type="button" class="btn-cancel" id="btnCancelRecovery">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="help-text">
+                    <i class="fas fa-info-circle"></i>
+                    Você receberá um email com instruções para redefinir sua senha
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script/route-protection.js"></script>
+    <script src="../script/login.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://kripken.github.io/ammo.js/builds/ammo.wasm.js"></script>
+    <script src="../script/dice-background-simple.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            Ammo().then(() => {
+                if (window.DiceBackground) {
+                    window.diceBackground = new window.DiceBackground();
+                    window.diceBackground.init();
+                }
+            }).catch(error => {
+                // Falha silenciosa do Ammo.js
+            });
+        });
+    </script>
+</body>
+</html>
