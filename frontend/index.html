@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oblivion RPG</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .loading-container {
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .logo {
+            font-size: 3rem;
+            color: #ff6b35;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.6);
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 2rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 107, 53, 0.3);
+            border-top: 3px solid #ff6b35;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="logo">
+            <i class="fas fa-dragon"></i> Oblivion RPG
+        </div>
+        <div class="loading-text">Verificando autenticação...</div>
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // Verificar se o usuário está logado e redirecionar
+        function checkAuthAndRedirect() {
+            try {
+                let userSession = localStorage.getItem('oblivion_user_session');
+                if (!userSession) {
+                    userSession = sessionStorage.getItem('oblivion_user_session');
+                }
+                
+                if (userSession) {
+                    const sessionData = JSON.parse(userSession);
+                    
+                    // Verificar se a sessão tem os campos obrigatórios
+                    if (sessionData && sessionData.user_id && sessionData.token && sessionData.expires_at) {
+                        // Verificar se a sessão não expirou
+                        const now = new Date().getTime();
+                        const expiresAt = new Date(sessionData.expires_at).getTime();
+                        
+                        if (now < expiresAt) {
+                            // Sessão válida - ir para dashboard
+                            window.location.href = 'pages/dashboard.html';
+                            return;
+                        } else {
+                            // Sessão expirada - limpar dados
+                            localStorage.removeItem('oblivion_user_session');
+                            sessionStorage.removeItem('oblivion_user_session');
+                            localStorage.removeItem('userSession');
+                        }
+                    }
+                }
+                
+                // Usuário não logado ou sessão inválida - ir para login
+                window.location.href = 'pages/login.html';
+                
+            } catch (error) {
+                console.error('Erro ao verificar autenticação:', error);
+                // Em caso de erro, redirecionar para login
+                window.location.href = 'pages/login.html';
+            }
+        }
+
+        // Executar verificação após pequeno delay para mostrar o loading
+        setTimeout(checkAuthAndRedirect, 1000);
+    </script>
+
+    <!-- Font Awesome para ícones -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
+</body>
+</html>
