@@ -180,15 +180,12 @@
     </div>
 
     <script src="../script/register.js"></script>
-    <!-- Scripts do sistema 3D de dados -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <script src="https://kripken.github.io/ammo.js/builds/ammo.wasm.js"></script>
     <script src="../script/dice-background-simple.js"></script>
     <script>
-        // Aguarda o carregamento completo da página e das bibliotecas
         window.addEventListener('load', () => {
-            // Aguarda o carregamento da física antes de iniciar
             Ammo().then(() => {
                 console.log('✅ Ammo.js carregado');
                 if (window.DiceBackground) {
