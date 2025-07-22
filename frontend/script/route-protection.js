@@ -16,8 +16,20 @@ class RouteProtection {
                 errorMessage: 'Token de recuperação inválido ou expirado'
             },
             
-            // Páginas que exigem login (futuro)
+            // Páginas que exigem login
             'dashboard.html': {
+                type: 'login_required',
+                redirectTo: 'login.html',
+                errorMessage: 'Você precisa estar logado para acessar esta página'
+            },
+            
+            'characters.html': {
+                type: 'login_required',
+                redirectTo: 'login.html',
+                errorMessage: 'Você precisa estar logado para acessar esta página'
+            },
+            
+            'campaigns.html': {
                 type: 'login_required',
                 redirectTo: 'login.html',
                 errorMessage: 'Você precisa estar logado para acessar esta página'

@@ -22,6 +22,7 @@ class CampaignsManager {
     // ================================
 
     loadUserSession() {
+        // Buscar sessão já validada pelo route-protection
         let userSession = localStorage.getItem('oblivion_user_session');
         if (!userSession) {
             userSession = sessionStorage.getItem('oblivion_user_session');
@@ -30,13 +31,12 @@ class CampaignsManager {
         if (userSession) {
             try {
                 this.userSession = JSON.parse(userSession);
-                console.log('Sessão carregada:', this.userSession);
+                console.log('Sessão do usuário carregada:', this.userSession);
             } catch (e) {
-                console.error('Erro ao carregar sessão:', e);
+                console.error('Erro ao processar sessão:', e);
+                // Se chegou até aqui, é porque o route-protection falhou
                 window.location.href = 'login.html';
             }
-        } else {
-            window.location.href = 'login.html';
         }
     }
 

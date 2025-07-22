@@ -9,50 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Verificação de Autenticação Imediata -->
-    <script>
-        (function() {
-            // Verificação imediata de autenticação antes de carregar o conteúdo
-            let userSession = localStorage.getItem('oblivion_user_session');
-            if (!userSession) {
-                userSession = sessionStorage.getItem('oblivion_user_session');
-            }
-            
-            if (!userSession) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            try {
-                const sessionData = JSON.parse(userSession);
-                
-                // Verificar se a sessão tem os campos obrigatórios
-                if (!sessionData || !sessionData.user_id || !sessionData.token || !sessionData.expires_at) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                // Verificar se a sessão não expirou
-                const now = new Date().getTime();
-                const expiresAt = new Date(sessionData.expires_at).getTime();
-                
-                if (now >= expiresAt) {
-                    localStorage.removeItem('oblivion_user_session');
-                    sessionStorage.removeItem('oblivion_user_session');
-                    localStorage.removeItem('userSession');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                // Sessão válida - permitir carregamento da página
-                
-            } catch (e) {
-                window.location.href = 'login.html';
-                return;
-            }
-        })();
-    </script>
 </head>
 <body style="opacity: 0; transition: opacity 0.3s ease;">
     <!-- Header/Navbar -->
@@ -193,14 +149,16 @@
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="../script/route-protection.js"></script>
     <script src="../script/dashboard.js"></script>
 
     <script>
-        // Mostrar a página após carregar
+        // Mostrar a página após validação de autenticação
         document.addEventListener('DOMContentLoaded', () => {
+            // O route-protection já validou a autenticação
             document.body.style.opacity = '1';
         });
     </script>
 </body>
-</html>
 </html>
