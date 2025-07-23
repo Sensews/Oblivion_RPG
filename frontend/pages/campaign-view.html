@@ -163,6 +163,86 @@
         </div>
     </main>
 
+    <!-- Modal de Documentos -->
+    <div class="characters-modal" id="documentsModal">
+        <div class="characters-modal-content">
+            <div class="characters-modal-header">
+                <h2 class="characters-modal-title">
+                    <i class="fas fa-edit"></i>
+                    Editor de Texto
+                </h2>
+                <button class="characters-modal-close" id="closeDocumentsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="characters-modal-body">
+                <!-- Action Buttons -->
+                <div class="modal-actions" style="margin-bottom: 20px;">
+                    <button class="btn-primary" id="createDocumentBtn">
+                        <i class="fas fa-plus"></i>
+                        Criar Novo Documento
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div class="characters-loading" id="documentsLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Carregando documentos...</p>
+                </div>
+                
+                <!-- No Documents State -->
+                <div class="no-characters" id="noDocuments" style="display: none;">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Nenhum documento encontrado</h3>
+                    <p>Esta campanha ainda não possui documentos. Crie o primeiro documento!</p>
+                </div>
+                
+                <!-- Documents Grid -->
+                <div class="characters-grid" id="documentsGrid" style="display: none;">
+                    <!-- Documents will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Criar Documento -->
+    <div class="create-document-modal" id="createDocumentModal" style="display: none;">
+        <div class="modal-backdrop" id="createDocumentBackdrop"></div>
+        <div class="modal-content create-document-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus"></i> Criar Novo Documento</h2>
+                <button class="modal-close" id="closeCreateDocument">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="createDocumentForm">
+                    <div class="form-group">
+                        <label for="newDocumentTitle">Título do Documento</label>
+                        <input type="text" 
+                               id="newDocumentTitle" 
+                               class="form-input" 
+                               placeholder="Digite o título do documento..."
+                               maxlength="255"
+                               required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancelCreateDocument">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-edit"></i>
+                            Criar e Editar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Personagens -->
     <div class="characters-modal" id="charactersModal">
         <div class="characters-modal-content">

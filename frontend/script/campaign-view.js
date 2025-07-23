@@ -123,6 +123,52 @@ class CampaignView {
             });
         }
 
+        // Modal de documentos
+        const closeDocumentsModal = document.getElementById('closeDocumentsModal');
+        if (closeDocumentsModal) {
+            closeDocumentsModal.addEventListener('click', () => this.closeDocumentsModal());
+        }
+
+        // Fechar modal de documentos clicando fora
+        const documentsModal = document.getElementById('documentsModal');
+        if (documentsModal) {
+            documentsModal.addEventListener('click', (e) => {
+                if (e.target === documentsModal) {
+                    this.closeDocumentsModal();
+                }
+            });
+        }
+
+        // Botão criar documento
+        const createDocumentBtn = document.getElementById('createDocumentBtn');
+        if (createDocumentBtn) {
+            createDocumentBtn.addEventListener('click', () => {
+                this.openDocumentEditor(); // Ir direto para o editor sem modal
+            });
+        }
+
+        // Modal de criar documento
+        const closeCreateDocument = document.getElementById('closeCreateDocument');
+        const cancelCreateDocument = document.getElementById('cancelCreateDocument');
+        const createDocumentBackdrop = document.getElementById('createDocumentBackdrop');
+        const createDocumentForm = document.getElementById('createDocumentForm');
+
+        if (closeCreateDocument) {
+            closeCreateDocument.addEventListener('click', () => this.hideCreateDocumentModal());
+        }
+
+        if (cancelCreateDocument) {
+            cancelCreateDocument.addEventListener('click', () => this.hideCreateDocumentModal());
+        }
+
+        if (createDocumentBackdrop) {
+            createDocumentBackdrop.addEventListener('click', () => this.hideCreateDocumentModal());
+        }
+
+        if (createDocumentForm) {
+            createDocumentForm.addEventListener('submit', (e) => this.handleCreateDocument(e));
+        }
+
         // Logo home
         const logoHome = document.getElementById('logoHome');
         if (logoHome) {
@@ -275,10 +321,9 @@ class CampaignView {
         await this.loadCampaignCharacters();
     }
 
-    openTextEditor() {
-        this.showNotification('Funcionalidade em desenvolvimento', 'info');
-        // TODO: Implementar navegação para editor de texto
-        // window.location.href = `text-editor.html?campaign=${this.campaignId}`;
+    async openTextEditor() {
+        this.showDocumentsModal();
+        await this.loadCampaignDocuments();
     }
 
     openNpcsManager() {
@@ -412,6 +457,304 @@ class CampaignView {
         card.appendChild(user);
         
         return card;
+    }
+
+    // ================================
+    // MODAL DE DOCUMENTOS
+    // ================================
+
+    showDocumentsModal() {
+        const modal = document.getElementById('documentsModal');
+        if (modal) {
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeDocumentsModal() {
+        const modal = document.getElementById('documentsModal');
+        if (modal) {
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    }
+
+    async loadCampaignDocuments() {
+        if (!this.campaignId) return;
+
+        const loadingEl = document.getElementById('documentsLoading');
+        const noDocumentsEl = document.getElementById('noDocuments');
+        const gridEl = document.getElementById('documentsGrid');
+
+        // Mostrar loading
+        if (loadingEl) loadingEl.style.display = 'block';
+        if (noDocumentsEl) noDocumentsEl.style.display = 'none';
+        if (gridEl) gridEl.style.display = 'none';
+
+        try {
+            const authToken = this.getAuthToken();
+            
+            const url = `/Oblivion_RPG/backend/editor-documents.php?campaign_id=${this.campaignId}`;
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.message || 'Erro ao carregar documentos');
+            }
+
+            // Esconder loading
+            if (loadingEl) loadingEl.style.display = 'none';
+
+            if (!data.documents || data.documents.length === 0) {
+                // Mostrar estado vazio
+                if (noDocumentsEl) noDocumentsEl.style.display = 'block';
+            } else {
+                // Mostrar documentos
+                this.renderDocuments(data.documents);
+                if (gridEl) gridEl.style.display = 'grid';
+                
+                // Atualizar contador de documentos
+                this.updateDocumentCount(data.documents.length);
+            }
+
+        } catch (error) {
+            console.error('Erro ao carregar documentos:', error);
+            
+            // Esconder loading
+            if (loadingEl) loadingEl.style.display = 'none';
+            
+            this.showError(`Erro ao carregar documentos: ${error.message}`);
+        }
+    }
+
+    renderDocuments(documents) {
+        const gridEl = document.getElementById('documentsGrid');
+        if (!gridEl) return;
+
+        gridEl.innerHTML = '';
+
+        documents.forEach(doc => {
+            const card = this.createDocumentCard(doc);
+            gridEl.appendChild(card);
+        });
+    }
+
+    createDocumentCard(doc) {
+        const card = document.createElement('div');
+        card.className = 'character-card document-card';
+        card.style.cursor = 'pointer';
+        
+        // Ícone do documento
+        const icon = document.createElement('div');
+        icon.className = 'character-avatar document-icon';
+        icon.innerHTML = '<i class="fas fa-file-alt"></i>';
+        
+        // Título do documento
+        const title = document.createElement('h3');
+        title.className = 'character-name';
+        title.textContent = doc.titulo;
+        
+        // Informações do documento
+        const info = document.createElement('p');
+        info.className = 'character-user document-info';
+        info.innerHTML = `
+            <span><i class="fas fa-clock"></i> ${doc.ultima_edicao_formatada}</span>
+            <span><i class="fas fa-font"></i> ${this.formatFileSize(doc.tamanho_conteudo)}</span>
+        `;
+        
+        // Botões de ação
+        const actions = document.createElement('div');
+        actions.className = 'document-actions';
+        actions.innerHTML = `
+            <button class="btn-edit" title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-delete" title="Excluir">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        
+        // Event listeners
+        const editBtn = actions.querySelector('.btn-edit');
+        const deleteBtn = actions.querySelector('.btn-delete');
+        
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openDocumentEditor(doc.id);
+        });
+        
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.deleteDocument(doc.id, doc.titulo);
+        });
+        
+        // Abrir documento ao clicar no card
+        card.addEventListener('click', () => {
+            this.openDocumentEditor(doc.id);
+        });
+        
+        card.appendChild(icon);
+        card.appendChild(title);
+        card.appendChild(info);
+        card.appendChild(actions);
+        
+        return card;
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return 'Vazio';
+        if (bytes < 1000) return `${bytes} chars`;
+        if (bytes < 1000000) return `${(bytes / 1000).toFixed(1)}K chars`;
+        return `${(bytes / 1000000).toFixed(1)}M chars`;
+    }
+
+    updateDocumentCount(count) {
+        const countEl = document.getElementById('documentCount');
+        if (countEl) {
+            countEl.textContent = count;
+        }
+    }
+
+    getAuthToken() {
+        if (this.userSession) {
+            // Enviar apenas os dados necessários para validação
+            const sessionData = {
+                user_id: this.userSession.user_id
+            };
+            return btoa(JSON.stringify(sessionData));
+        }
+        return null;
+    }
+
+    async openDocumentEditor(documentId = null) {
+        this.closeDocumentsModal();
+        
+        if (documentId) {
+            // Editar documento existente
+            window.location.href = `text-editor.html?campaign=${this.campaignId}&document=${documentId}`;
+        } else {
+            // Criar novo documento
+            window.location.href = `text-editor.html?campaign=${this.campaignId}`;
+        }
+    }
+
+    async deleteDocument(documentId, title) {
+        const confirmed = confirm(`Tem certeza que deseja excluir o documento "${title}"?`);
+        if (!confirmed) return;
+
+        try {
+            const authToken = this.getAuthToken();
+            const response = await fetch(`/Oblivion_RPG/backend/editor-documents.php?id=${documentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.message || 'Erro ao excluir documento');
+            }
+
+            this.showNotification('Documento excluído com sucesso', 'success');
+            await this.loadCampaignDocuments(); // Recarregar lista
+
+        } catch (error) {
+            console.error('Erro ao excluir documento:', error);
+            this.showError(`Erro ao excluir documento: ${error.message}`);
+        }
+    }
+
+    // ================================
+    // MODAL DE CRIAR DOCUMENTO
+    // ================================
+
+    showCreateDocumentModal() {
+        const modal = document.getElementById('createDocumentModal');
+        const titleInput = document.getElementById('newDocumentTitle');
+        
+        if (modal) {
+            modal.style.display = 'flex';
+            // Forçar reflow antes de adicionar a classe
+            modal.offsetHeight;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        if (titleInput) {
+            titleInput.value = '';
+            setTimeout(() => titleInput.focus(), 100);
+        }
+    }
+
+    hideCreateDocumentModal() {
+        const modal = document.getElementById('createDocumentModal');
+        if (modal) {
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+            // Aguardar a transição antes de esconder
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+    }
+
+    async handleCreateDocument(e) {
+        e.preventDefault();
+        
+        const titleInput = document.getElementById('newDocumentTitle');
+        const title = titleInput ? titleInput.value.trim() : '';
+        
+        if (!title) {
+            this.showError('Por favor, digite um título para o documento');
+            titleInput?.focus();
+            return;
+        }
+
+        try {
+            const authToken = this.getAuthToken();
+            const response = await fetch('/Oblivion_RPG/backend/editor-documents.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({
+                    campaign_id: this.campaignId,
+                    titulo: title,
+                    conteudo: ''
+                })
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.message || 'Erro ao criar documento');
+            }
+
+            // Fechar modal e abrir editor
+            this.hideCreateDocumentModal();
+            this.showNotification('Documento criado com sucesso', 'success');
+            
+            // Ir para o editor com o novo documento
+            setTimeout(() => {
+                window.location.href = `text-editor.html?campaign=${this.campaignId}&document=${data.document_id}`;
+            }, 500);
+
+        } catch (error) {
+            console.error('Erro ao criar documento:', error);
+            this.showError(`Erro ao criar documento: ${error.message}`);
+        }
     }
 
     // ================================
