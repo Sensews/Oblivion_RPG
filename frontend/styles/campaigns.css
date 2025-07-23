@@ -245,10 +245,43 @@
 
 /* Card de Campanha Existente */
 .campaign-card.existing {
-    cursor: default;
+    cursor: pointer;
     animation: slideInUp 0.6s ease forwards;
     opacity: 0;
     transform: translateY(30px);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.campaign-card.existing::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.1) 0%, 
+        transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.campaign-card.existing:hover::after {
+    opacity: 1;
+}
+
+.campaign-card.existing:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    border-color: var(--accent-color);
+}
+
+.campaign-card.existing .campaign-actions {
+    position: relative;
+    z-index: 2;
 }
 
 .campaign-card.existing:nth-child(1) { animation-delay: 0.1s; }

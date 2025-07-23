@@ -35,6 +35,12 @@ class RouteProtection {
                 errorMessage: 'Você precisa estar logado para acessar esta página'
             },
             
+            'campaign-view.html': {
+                type: 'login_required',
+                redirectTo: 'login.html',
+                errorMessage: 'Você precisa estar logado para acessar esta página'
+            },
+            
             'profile.html': {
                 type: 'login_required',
                 redirectTo: 'login.html',

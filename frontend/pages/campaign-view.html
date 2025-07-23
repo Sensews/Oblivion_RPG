@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="campaignTitle">Campanha - Oblivion RPG</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/campaign-view.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="opacity: 0; transition: opacity 0.3s ease;">
+    <!-- Header/Navbar -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo clickable" id="logoHome">
+                    <i class="fas fa-dragon"></i>
+                    <h1>Oblivion RPG</h1>
+                </div>
+            </div>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="campaigns.html" class="nav-link"><i class="fas fa-gamepad"></i> Campanhas</a></li>
+                    <li><a href="#" class="nav-link active"><i class="fas fa-scroll"></i> <span id="navCampaignName">Campanha</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn-settings" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="dashboard-main">
+        <div class="dashboard-content">
+            <!-- Header da Campanha -->
+            <div class="campaign-header">
+                <div class="campaign-banner">
+                    <div class="campaign-image-container">
+                        <img id="campaignImage" src="" alt="Imagem da Campanha" style="display: none;">
+                        <div class="campaign-image-placeholder" id="campaignImagePlaceholder">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </div>
+                    <div class="campaign-info">
+                        <h1 id="campaignName">Carregando...</h1>
+                        <p id="campaignDescription">Carregando descrição...</p>
+                        <div class="campaign-meta">
+                            <span class="campaign-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                Criada em: <span id="campaignDate">--</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Código de Convite - Agora dentro do banner -->
+                    <div class="invite-card">
+                        <h3><i class="fas fa-ticket-alt"></i> Código de Convite</h3>
+                        <div class="invite-code-container">
+                            <span class="invite-code" id="inviteCode">------</span>
+                            <button class="btn-copy" id="copyInviteBtn" title="Copiar código">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <p class="invite-help">Compartilhe este código para convidar jogadores</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de Funcionalidades -->
+            <div class="campaign-features-grid">
+                <!-- Gerenciar Personagens -->
+                <div class="feature-card" id="manageCharactersCard">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Gerenciar Personagens</h3>
+                        <p>Visualize e gerencie os personagens conectados a esta campanha</p>
+                        <div class="feature-stats">
+                            <span class="stat">
+                                <i class="fas fa-user"></i>
+                                <span id="characterCount">0</span> Personagens
+                            </span>
+                        </div>
+                    </div>
+                    <div class="feature-action">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Editor de Texto -->
+                <div class="feature-card" id="textEditorCard">
+                    <div class="feature-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Editor de Texto</h3>
+                        <p>Crie e edite anotações, histórias e conteúdo da campanha</p>
+                        <div class="feature-stats">
+                            <span class="stat">
+                                <i class="fas fa-file-alt"></i>
+                                <span id="documentCount">0</span> Documentos
+                            </span>
+                        </div>
+                    </div>
+                    <div class="feature-action">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Gerenciar NPCs -->
+                <div class="feature-card" id="manageNpcsCard">
+                    <div class="feature-icon">
+                        <i class="fas fa-mask"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Gerenciar NPCs</h3>
+                        <p>Crie e gerencie NPCs (Personagens Não-Jogáveis) da campanha</p>
+                        <div class="feature-stats">
+                            <span class="stat">
+                                <i class="fas fa-robot"></i>
+                                <span id="npcCount">0</span> NPCs
+                            </span>
+                        </div>
+                    </div>
+                    <div class="feature-action">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Configurações da Campanha -->
+                <div class="feature-card" id="campaignSettingsCard">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Configurações</h3>
+                        <p>Edite informações e configurações desta campanha</p>
+                        <div class="feature-stats">
+                            <span class="stat">
+                                <i class="fas fa-wrench"></i>
+                                Configurar
+                            </span>
+                        </div>
+                    </div>
+                    <div class="feature-action">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Configurações -->
+    <div class="settings-modal" id="settingsModal" style="display: none;">
+        <div class="modal-backdrop" id="settingsBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Configurações</h2>
+                <button class="modal-close" id="closeSettings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Tema -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-palette"></i>
+                        <label>Tema</label>
+                    </div>
+                    <div class="theme-toggle">
+                        <input type="radio" id="darkTheme" name="theme" value="dark" checked>
+                        <label for="darkTheme">Escuro</label>
+                        <input type="radio" id="lightTheme" name="theme" value="light">
+                        <label for="lightTheme">Claro</label>
+                    </div>
+                </div>
+
+                <!-- Cor Secundária -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-color-palette"></i>
+                        <label>Cor Secundária</label>
+                    </div>
+                    <div class="color-picker-container">
+                        <div class="color-preview" id="colorPreview"></div>
+                        <input type="color" id="secondaryColorPicker" value="#ff6b35">
+                        <div class="color-presets" id="colorPresets">
+                            <div class="color-preset active" data-color="#ff6b35" title="Laranja (Padrão)"></div>
+                            <div class="color-preset" data-color="#e74c3c" title="Vermelho"></div>
+                            <div class="color-preset" data-color="#3498db" title="Azul"></div>
+                            <div class="color-preset" data-color="#2ecc71" title="Verde"></div>
+                            <div class="color-preset" data-color="#9b59b6" title="Roxo"></div>
+                            <div class="color-preset" data-color="#f39c12" title="Amarelo"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-reset" id="resetSettings">
+                    <i class="fas fa-undo"></i>
+                    Restaurar Padrão
+                </button>
+                <button class="btn-save" id="saveSettings">
+                    <i class="fas fa-save"></i>
+                    Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-dragon fa-spin"></i>
+            <p>Carregando campanha...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../script/route-protection.js"></script>
+    <script src="../script/dashboard.js"></script>
+    <script src="../script/campaign-view.js"></script>
+
+    <script>
+        // Mostrar a página após validação de autenticação
+        document.addEventListener('DOMContentLoaded', () => {
+            // O route-protection já validou a autenticação
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

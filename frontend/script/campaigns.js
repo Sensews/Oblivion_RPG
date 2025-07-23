@@ -258,6 +258,23 @@ class CampaignsManager {
         cardDiv.className = 'campaign-card existing';
         cardDiv.setAttribute('data-id', campaign.id);
 
+        // Adicionar evento de clique para navegar para a página da campanha
+        cardDiv.addEventListener('click', (e) => {
+            // Verificar se o clique não foi em um botão de ação
+            if (!e.target.closest('.campaign-actions')) {
+                this.navigateToCampaign(campaign.id);
+            }
+        });
+
+        // Adicionar cursor pointer quando não estiver sobre botões
+        cardDiv.addEventListener('mouseover', (e) => {
+            if (!e.target.closest('.campaign-actions')) {
+                cardDiv.style.cursor = 'pointer';
+            } else {
+                cardDiv.style.cursor = 'default';
+            }
+        });
+
         // Criar container da imagem
         const imageDiv = document.createElement('div');
         imageDiv.className = `campaign-image ${campaign.foto_url ? '' : 'no-image'}`;
@@ -301,13 +318,19 @@ class CampaignsManager {
         // Botão editar
         const editBtn = document.createElement('button');
         editBtn.className = 'btn-edit';
-        editBtn.onclick = () => this.openEditModal(campaign.id);
+        editBtn.onclick = (e) => {
+            e.stopPropagation(); // Impedir que o clique propague para o card
+            this.openEditModal(campaign.id);
+        };
         editBtn.innerHTML = '<i class="fas fa-edit"></i> Editar';
 
         // Botão excluir
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'btn-delete';
-        deleteBtn.onclick = () => this.openDeleteModal(campaign.id);
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation(); // Impedir que o clique propague para o card
+            this.openDeleteModal(campaign.id);
+        };
         deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Excluir';
 
         // Montar a estrutura
@@ -578,6 +601,15 @@ class CampaignsManager {
             console.error('Erro ao excluir campanha:', error);
             this.showNotification('Erro ao excluir campanha', 'error');
         }
+    }
+
+    // ================================
+    // NAVEGAÇÃO
+    // ================================
+
+    navigateToCampaign(campaignId) {
+        // Navegar para a página de visualização da campanha
+        window.location.href = `campaign-view.html?id=${campaignId}`;
     }
 
     // ================================
