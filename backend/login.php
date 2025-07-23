@@ -133,12 +133,8 @@ try {
         ]
     ];
     
-    // Determinar redirecionamento baseado no tipo de perfil
-    if ($user['tipo_perfil'] === 'mestre') {
-        $response['redirect'] = '../dashboard/mestre.html';
-    } else {
-        $response['redirect'] = '../dashboard/jogador.html';
-    }
+    // Redirecionamento para o dashboard principal
+    $response['redirect'] = '../pages/dashboard.html';
     
     echo json_encode($response);
     

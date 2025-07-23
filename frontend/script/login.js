@@ -132,18 +132,25 @@ class LoginHandler {
             if (data.success) {
                 this.showSuccess('Login realizado com sucesso!');
                 
+                // Criar objeto de sessão no formato esperado pelo dashboard
+                const sessionData = {
+                    user_id: data.user.id,
+                    token: data.token,
+                    expires_at: data.expires_at,
+                    user: data.user,
+                    user_type: data.user.tipo_perfil || 'jogador'
+                };
+                
                 // Armazenar dados de autenticação
                 if (rememberMe) {
-                    localStorage.setItem('auth_token', data.token);
-                    localStorage.setItem('user_data', JSON.stringify(data.user));
+                    localStorage.setItem('oblivion_user_session', JSON.stringify(sessionData));
                 } else {
-                    sessionStorage.setItem('auth_token', data.token);
-                    sessionStorage.setItem('user_data', JSON.stringify(data.user));
+                    sessionStorage.setItem('oblivion_user_session', JSON.stringify(sessionData));
                 }
 
                 // Redirecionar após 1 segundo
                 setTimeout(() => {
-                    window.location.href = data.redirect || '../dashboard/index.html';
+                    window.location.href = data.redirect || '../pages/dashboard.html';
                 }, 1000);
             } else {
                 throw new Error(data.message || 'Erro ao fazer login');

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Personagens - Oblivion RPG</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/characters.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="opacity: 0; transition: opacity 0.3s ease;">
+    <!-- Header/Navbar -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo clickable" id="logoHome">
+                    <i class="fas fa-dragon"></i>
+                    <h1>Oblivion RPG</h1>
+                </div>
+            </div>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#" class="nav-link active"><i class="fas fa-users"></i> Gerenciar Personagens</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn-settings" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="dashboard-main">
+        <div class="dashboard-content">
+            <div class="page-header">
+                <h1><i class="fas fa-users"></i> Gerenciar Personagens</h1>
+                <p>Crie e gerencie seus personagens de RPG</p>
+            </div>
+
+            <div class="characters-grid">
+                <!-- Container para o botão de criar centralizado -->
+                <div class="create-character-container">
+                    <div class="character-card create-new" id="createCharacterBtn">
+                        <div class="create-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <h3>Criar Novo Personagem</h3>
+                        <p>Dê vida a um novo herói</p>
+                    </div>
+                </div>
+
+                <!-- Container para personagens existentes com scroll -->
+                <div class="existing-characters-container">
+                    <div class="existing-characters-grid" id="existingCharacters">
+                        <!-- Mensagem inicial que será substituída pelo JavaScript -->
+                        <p class="no-characters">Nenhum personagem criado ainda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Configurações -->
+    <div class="settings-modal" id="settingsModal" style="display: none;">
+        <div class="modal-backdrop" id="settingsBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Configurações</h2>
+                <button class="modal-close" id="closeSettings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Tema -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-palette"></i>
+                        <label>Tema</label>
+                    </div>
+                    <div class="theme-toggle">
+                        <input type="radio" id="darkMode" name="theme" value="dark" checked>
+                        <label for="darkMode">
+                            <i class="fas fa-moon"></i>
+                            Modo Escuro
+                        </label>
+                        <input type="radio" id="lightMode" name="theme" value="light">
+                        <label for="lightMode">
+                            <i class="fas fa-sun"></i>
+                            Modo Claro
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Cor Secundária -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-palette"></i>
+                        <label>Cor Secundária</label>
+                    </div>
+                    <div class="color-picker-container">
+                        <div class="color-preview" id="colorPreview"></div>
+                        <input type="color" id="secondaryColorPicker" value="#ff6b35">
+                        <div class="color-presets">
+                            <button class="color-preset" data-color="#ff6b35" style="background-color: #ff6b35;"></button>
+                            <button class="color-preset" data-color="#4ecdc4" style="background-color: #4ecdc4;"></button>
+                            <button class="color-preset" data-color="#45b7d1" style="background-color: #45b7d1;"></button>
+                            <button class="color-preset" data-color="#96ceb4" style="background-color: #96ceb4;"></button>
+                            <button class="color-preset" data-color="#feca57" style="background-color: #feca57;"></button>
+                            <button class="color-preset" data-color="#ff9ff3" style="background-color: #ff9ff3;"></button>
+                            <button class="color-preset" data-color="#54a0ff" style="background-color: #54a0ff;"></button>
+                            <button class="color-preset" data-color="#5f27cd" style="background-color: #5f27cd;"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-reset" id="resetSettings">
+                    <i class="fas fa-undo"></i>
+                    Restaurar Padrão
+                </button>
+                <button class="btn-save" id="saveSettings">
+                    <i class="fas fa-save"></i>
+                    Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Criar/Editar Personagem -->
+    <div class="character-modal" id="characterModal" style="display: none;">
+        <div class="modal-backdrop" id="characterBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="characterModalTitle"><i class="fas fa-plus"></i> Criar Novo Personagem</h2>
+                <button class="modal-close" id="closeCharacterModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="characterForm">
+                    <input type="hidden" id="characterId" value="">
+                    
+                    <div class="form-group">
+                        <label for="characterName">Nome do Personagem</label>
+                        <input type="text" id="characterName" name="nome" required maxlength="100" placeholder="Digite o nome do personagem">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="characterImage">URL da Imagem</label>
+                        <input type="url" id="characterImage" name="foto_url" placeholder="https://exemplo.com/imagem.jpg">
+                        <small>Cole a URL de uma imagem para representar seu personagem</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="characterCampaign">Campanha</label>
+                        <select id="characterCampaign" name="campanha_id">
+                            <option value="">Nenhuma campanha</option>
+                            <!-- Campanhas serão carregadas via JavaScript -->
+                        </select>
+                        <small>Escolha uma campanha para este personagem (opcional)</small>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" id="cancelCharacter">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="submit" form="characterForm" class="btn-save" id="saveCharacter">
+                    <i class="fas fa-save"></i>
+                    Salvar Personagem
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Delete -->
+    <div class="delete-modal" id="deleteModal" style="display: none;">
+        <div class="modal-backdrop" id="deleteBackdrop"></div>
+        <div class="modal-content delete-content">
+            <div class="modal-header delete-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
+            </div>
+
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o personagem <strong id="deleteCharacterName"></strong>?</p>
+                <p class="warning-text">Esta ação não pode ser desfeita!</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" id="cancelDelete">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn-delete" id="confirmDelete">
+                    <i class="fas fa-trash"></i>
+                    Excluir Personagem
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../script/route-protection.js"></script>
+    <script src="../script/dashboard.js"></script>
+    <script src="../script/characters.js"></script>
+
+    <script>
+        // Mostrar a página após validação de autenticação
+        document.addEventListener('DOMContentLoaded', () => {
+            // O route-protection já validou a autenticação
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
