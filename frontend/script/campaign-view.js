@@ -107,6 +107,22 @@ class CampaignView {
             campaignSettingsCard.addEventListener('click', () => this.openCampaignSettings());
         }
 
+        // Modal de personagens
+        const closeCharactersModal = document.getElementById('closeCharactersModal');
+        if (closeCharactersModal) {
+            closeCharactersModal.addEventListener('click', () => this.closeCharactersModal());
+        }
+
+        // Fechar modal clicando fora
+        const charactersModal = document.getElementById('charactersModal');
+        if (charactersModal) {
+            charactersModal.addEventListener('click', (e) => {
+                if (e.target === charactersModal) {
+                    this.closeCharactersModal();
+                }
+            });
+        }
+
         // Logo home
         const logoHome = document.getElementById('logoHome');
         if (logoHome) {
@@ -254,10 +270,9 @@ class CampaignView {
     // FUNCIONALIDADES DOS CARDS
     // ================================
 
-    openCharactersManager() {
-        this.showNotification('Funcionalidade em desenvolvimento', 'info');
-        // TODO: Implementar navegação para gerenciador de personagens
-        // window.location.href = `characters-manager.html?campaign=${this.campaignId}`;
+    async openCharactersManager() {
+        this.showCharactersModal();
+        await this.loadCampaignCharacters();
     }
 
     openTextEditor() {
@@ -275,6 +290,128 @@ class CampaignView {
     openCampaignSettings() {
         this.showNotification('Funcionalidade em desenvolvimento', 'info');
         // TODO: Implementar modal ou página de configurações da campanha
+    }
+
+    // ================================
+    // MODAL DE PERSONAGENS
+    // ================================
+
+    showCharactersModal() {
+        const modal = document.getElementById('charactersModal');
+        if (modal) {
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeCharactersModal() {
+        const modal = document.getElementById('charactersModal');
+        if (modal) {
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    }
+
+    async loadCampaignCharacters() {
+        if (!this.campaignId) return;
+
+        const loadingEl = document.getElementById('charactersLoading');
+        const noCharactersEl = document.getElementById('noCharacters');
+        const gridEl = document.getElementById('charactersGrid');
+
+        // Mostrar loading
+        if (loadingEl) loadingEl.style.display = 'block';
+        if (noCharactersEl) noCharactersEl.style.display = 'none';
+        if (gridEl) gridEl.style.display = 'none';
+
+        try {
+            const url = `/Oblivion_RPG/backend/characters-simple.php?campaign_id=${this.campaignId}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.message || 'Erro ao carregar personagens');
+            }
+
+            // Esconder loading
+            if (loadingEl) loadingEl.style.display = 'none';
+
+            if (!data.characters || data.characters.length === 0) {
+                // Mostrar estado vazio
+                if (noCharactersEl) noCharactersEl.style.display = 'block';
+            } else {
+                // Mostrar personagens
+                this.renderCharacters(data.characters);
+                if (gridEl) gridEl.style.display = 'grid';
+            }
+
+        } catch (error) {
+            console.error('Erro ao carregar personagens:', error);
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (noCharactersEl) {
+                noCharactersEl.style.display = 'block';
+                const noCharactersTitle = noCharactersEl.querySelector('h3');
+                const noCharactersText = noCharactersEl.querySelector('p');
+                if (noCharactersTitle) noCharactersTitle.textContent = 'Erro ao carregar personagens';
+                if (noCharactersText) noCharactersText.textContent = error.message;
+            }
+        }
+    }
+
+    renderCharacters(characters) {
+        const gridEl = document.getElementById('charactersGrid');
+        if (!gridEl) return;
+
+        gridEl.innerHTML = '';
+
+        characters.forEach(character => {
+            const characterCard = this.createCharacterCard(character);
+            gridEl.appendChild(characterCard);
+        });
+    }
+
+    createCharacterCard(character) {
+        const card = document.createElement('div');
+        card.className = 'character-card';
+        
+        // Avatar do personagem
+        const avatar = document.createElement('div');
+        avatar.className = 'character-avatar';
+        
+        if (character.foto_url && character.foto_url.trim()) {
+            const img = document.createElement('img');
+            img.src = character.foto_url;
+            img.alt = character.nome;
+            img.onerror = () => {
+                // Se a imagem falhar, mostrar placeholder
+                avatar.innerHTML = `<div class="character-avatar-placeholder">${character.nome.charAt(0).toUpperCase()}</div>`;
+            };
+            avatar.appendChild(img);
+        } else {
+            // Placeholder com primeira letra do nome
+            avatar.innerHTML = `<div class="character-avatar-placeholder">${character.nome.charAt(0).toUpperCase()}</div>`;
+        }
+        
+        // Nome do personagem
+        const name = document.createElement('h3');
+        name.className = 'character-name';
+        name.textContent = character.nome;
+        
+        // Nome do usuário
+        const user = document.createElement('p');
+        user.className = 'character-user';
+        user.textContent = `Jogado por: ${character.usuario.nome}`;
+        
+        card.appendChild(avatar);
+        card.appendChild(name);
+        card.appendChild(user);
+        
+        return card;
     }
 
     // ================================

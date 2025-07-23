@@ -81,7 +81,7 @@
             <!-- Grid de Funcionalidades -->
             <div class="campaign-features-grid">
                 <!-- Gerenciar Personagens -->
-                <div class="feature-card" id="manageCharactersCard">
+                <div class="feature-card characters-card" id="manageCharactersCard">
                     <div class="feature-icon">
                         <i class="fas fa-users"></i>
                     </div>
@@ -162,6 +162,41 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal de Personagens -->
+    <div class="characters-modal" id="charactersModal">
+        <div class="characters-modal-content">
+            <div class="characters-modal-header">
+                <h2 class="characters-modal-title">
+                    <i class="fas fa-users"></i>
+                    Personagens da Campanha
+                </h2>
+                <button class="characters-modal-close" id="closeCharactersModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="characters-modal-body">
+                <!-- Loading State -->
+                <div class="characters-loading" id="charactersLoading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Carregando personagens...</p>
+                </div>
+                
+                <!-- No Characters State -->
+                <div class="no-characters" id="noCharacters" style="display: none;">
+                    <i class="fas fa-user-slash"></i>
+                    <h3>Nenhum personagem encontrado</h3>
+                    <p>Esta campanha ainda não possui personagens conectados.</p>
+                </div>
+                
+                <!-- Characters Grid -->
+                <div class="characters-grid" id="charactersGrid" style="display: none;">
+                    <!-- Characters will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal de Configurações -->
     <div class="settings-modal" id="settingsModal" style="display: none;">

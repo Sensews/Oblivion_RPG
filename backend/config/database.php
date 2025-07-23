@@ -82,4 +82,11 @@ class Database {
         return self::$pdo;
     }
 }
+
+/**
+ * Função de compatibilidade para código legado
+ */
+function getDatabaseConnection() {
+    return Database::getConnection();
+}
 ?>

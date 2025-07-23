@@ -246,6 +246,27 @@
     opacity: 1;
 }
 
+/* Estilo especial para o card de gerenciar personagens */
+.feature-card.characters-card {
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.1) 0%, 
+        var(--card-bg) 50%);
+    border: 2px solid rgba(var(--accent-rgb), 0.3);
+}
+
+.feature-card.characters-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 15px 40px rgba(var(--accent-rgb), 0.2);
+}
+
+.feature-card.characters-card .feature-icon {
+    background: linear-gradient(135deg, 
+        var(--accent-color) 0%, 
+        rgba(var(--accent-rgb), 0.8) 50%, 
+        rgba(var(--accent-rgb), 0.9) 100%);
+    box-shadow: 0 8px 25px rgba(var(--accent-rgb), 0.3);
+}
+
 .feature-icon {
     flex-shrink: 0;
     width: 70px;
@@ -408,6 +429,212 @@
 }
 
 /* =================================
+   MODAL DE PERSONAGENS
+================================= */
+
+.characters-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 2rem;
+}
+
+.characters-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.characters-modal-content {
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 2px solid var(--border-color);
+    width: 100%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.characters-modal.show .characters-modal-content {
+    transform: scale(1);
+}
+
+.characters-modal-header {
+    padding: 2rem 2rem 1rem;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: between;
+}
+
+.characters-modal-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin: 0;
+    flex: 1;
+}
+
+.characters-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin-left: 1rem;
+}
+
+.characters-modal-close:hover {
+    color: var(--accent-color);
+    background: rgba(var(--accent-rgb), 0.1);
+}
+
+.characters-modal-body {
+    padding: 2rem;
+}
+
+.characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.character-card {
+    background: var(--secondary-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.character-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.05) 0%, 
+        transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.character-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.character-card:hover::before {
+    opacity: 1;
+}
+
+.character-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    border: 3px solid var(--border-color);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.character-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.character-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    font-weight: bold;
+}
+
+.character-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.character-user {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.no-characters {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-secondary);
+}
+
+.no-characters i {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.no-characters h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.characters-loading {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-secondary);
+}
+
+.characters-loading i {
+    font-size: 2rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    display: block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* =================================
    RESPONSIVIDADE
 ================================= */
 
@@ -449,6 +676,36 @@
     .feature-action {
         align-self: center;
     }
+    
+    .characters-modal {
+        padding: 1rem;
+    }
+    
+    .characters-modal-content {
+        max-height: 90vh;
+    }
+    
+    .characters-modal-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    
+    .characters-modal-body {
+        padding: 1.5rem;
+    }
+    
+    .characters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .character-card {
+        padding: 1rem;
+    }
+    
+    .character-avatar {
+        width: 60px;
+        height: 60px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -470,5 +727,39 @@
     .invite-code-container {
         flex-direction: column;
         gap: 0.5rem;
+    }
+    
+    .characters-modal {
+        padding: 0.5rem;
+    }
+    
+    .characters-modal-header {
+        padding: 1rem;
+    }
+    
+    .characters-modal-body {
+        padding: 1rem;
+    }
+    
+    .characters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .characters-modal-title {
+        font-size: 1.4rem;
+    }
+    
+    .character-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .character-name {
+        font-size: 1rem;
+    }
+    
+    .character-user {
+        font-size: 0.8rem;
     }
 }
