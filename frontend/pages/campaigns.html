@@ -139,7 +139,7 @@
     </div>
 
     <!-- Modal para Criar/Editar Campanha -->
-    <div class="campaign-modal" id="campaignModal" style="display: none;">
+    <div class="campaign-modal" id="campaignModal">
         <div class="modal-backdrop" id="campaignBackdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
@@ -164,9 +164,25 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="campaignImage">URL da Imagem</label>
-                        <input type="url" id="campaignImage" name="foto_url" placeholder="https://exemplo.com/imagem.jpg">
-                        <small>Cole a URL de uma imagem para representar sua campanha</small>
+                        <label for="campaignImage">Imagem da Campanha</label>
+                        <div class="image-upload-container">
+                            <div class="upload-options">
+                                <button type="button" class="btn-upload" id="uploadImageBtn">
+                                    <i class="fas fa-upload"></i>
+                                    Enviar Imagem
+                                </button>
+                                <span class="upload-separator">ou</span>
+                                <input type="url" id="campaignImage" name="foto_url" placeholder="https://exemplo.com/imagem.jpg">
+                            </div>
+                            <input type="file" id="imageFileInput" accept="image/png,image/jpeg,image/gif,image/webp" style="display: none;">
+                            <div class="image-preview" id="imagePreview" style="display: none;">
+                                <img id="previewImg" src="" alt="Preview">
+                                <button type="button" class="btn-remove-image" id="removeImageBtn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <small>Envie uma imagem (PNG, JPEG, GIF, WebP) até 5MB ou cole uma URL</small>
                     </div>
                 </form>
             </div>
@@ -185,7 +201,7 @@
     </div>
 
     <!-- Modal de Confirmação de Delete -->
-    <div class="delete-modal" id="deleteModal" style="display: none;">
+    <div class="delete-modal" id="deleteModal">
         <div class="modal-backdrop" id="deleteBackdrop"></div>
         <div class="modal-content delete-content">
             <div class="modal-header delete-header">

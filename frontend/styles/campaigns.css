@@ -52,39 +52,69 @@
     max-height: 650px; /* Altura para aprox 2 linhas de cards */
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 10px; /* Espaço para a scrollbar */
+    padding: 1rem;
+    padding-right: 20px; /* Espaço para a scrollbar */
+    margin-top: 1rem;
 }
 
-/* Grid para campanhas existentes (5 colunas max) */
+/* Grid para campanhas existentes (4 colunas max) */
 .existing-campaigns-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
     min-height: min-content;
+    padding-bottom: 2rem;
 }
 
 /* Responsividade para telas menores */
-@media (max-width: 1600px) {
+@media (max-width: 1400px) {
     .existing-campaigns-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.5rem;
     }
 }
 
 @media (max-width: 1200px) {
     .existing-campaigns-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .campaign-card {
+        min-height: 320px;
+        max-height: 350px;
     }
 }
 
 @media (max-width: 900px) {
     .existing-campaigns-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .campaigns-grid {
+        padding: 1rem 0;
     }
 }
 
 @media (max-width: 600px) {
     .existing-campaigns-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .existing-campaigns-container {
+        padding: 0.5rem;
+        padding-right: 15px;
+    }
+    
+    .campaign-card {
+        min-height: 300px;
+        max-height: 330px;
+    }
+    
+    .campaign-image {
+        height: 160px;
     }
 }
 
@@ -129,12 +159,13 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    min-height: 280px;
-    max-height: 300px;
+    min-height: 350px;
+    max-height: 380px;
     display: flex;
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
+    transform: translateY(0);
 }
 
 .campaign-card::before {
@@ -149,9 +180,10 @@
 }
 
 .campaign-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
     border-color: var(--accent-color);
-    box-shadow: 0 10px 25px rgba(var(--accent-rgb), 0.3);
+    box-shadow: 0 15px 35px rgba(var(--accent-rgb), 0.4);
+    z-index: 10;
 }
 
 /* Card para Criar Nova Campanha */
@@ -214,105 +246,205 @@
 /* Card de Campanha Existente */
 .campaign-card.existing {
     cursor: default;
+    animation: slideInUp 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.campaign-card.existing:nth-child(1) { animation-delay: 0.1s; }
+.campaign-card.existing:nth-child(2) { animation-delay: 0.2s; }
+.campaign-card.existing:nth-child(3) { animation-delay: 0.3s; }
+.campaign-card.existing:nth-child(4) { animation-delay: 0.4s; }
+.campaign-card.existing:nth-child(5) { animation-delay: 0.5s; }
+.campaign-card.existing:nth-child(n+6) { animation-delay: 0.6s; }
+
+@keyframes slideInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .campaign-image {
     width: 100%;
-    height: 150px;
+    height: 180px;
     background: var(--bg-secondary);
-    border-radius: 10px;
-    margin-bottom: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1.2rem;
     overflow: hidden;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-size: 0; /* Esconde qualquer texto indesejado */
+    line-height: 0; /* Remove espaçamento de linha */
+}
+
+.campaign-image * {
+    font-size: initial; /* Restaura tamanho da fonte para elementos filhos válidos */
 }
 
 .campaign-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.campaign-image i {
+    font-size: 4rem !important;
+    color: var(--accent) !important;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.2) !important;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.campaign-card:hover .campaign-image i {
+    opacity: 1;
+}
+
+.campaign-card:hover .campaign-image img {
+    transform: scale(1.05);
 }
 
 .campaign-image.no-image {
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(var(--accent-rgb), 0.1) 100%);
+    background: linear-gradient(135deg, 
+        var(--bg-secondary) 0%, 
+        rgba(var(--accent-rgb), 0.1) 50%,
+        var(--bg-secondary) 100%);
     color: var(--text-secondary);
-    font-size: 3rem;
+    font-size: 3.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.campaign-image.no-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(var(--accent-rgb), 0.1), 
+        transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
 }
 
 .campaign-info {
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    min-height: 0;
 }
 
 .campaign-name {
     font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
     line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .campaign-description {
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
     flex: 1;
-    line-height: 1.5;
+    line-height: 1.6;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.8rem;
 }
 
 .campaign-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.8rem;
     margin-top: auto;
+    padding-top: 1rem;
 }
 
 .btn-edit,
 .btn-delete {
     flex: 1;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-edit::before,
+.btn-delete::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-edit:hover::before,
+.btn-delete:hover::before {
+    left: 100%;
 }
 
 .btn-edit {
-    background: rgba(var(--accent-rgb), 0.1);
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(var(--accent-rgb), 0.25) 100%);
     color: var(--accent-color);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
+    box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.2);
 }
 
 .btn-edit:hover {
-    background: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--glow-color) 100%);
     color: white;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.4);
 }
 
 .btn-delete {
-    background: rgba(220, 53, 69, 0.1);
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(220, 53, 69, 0.25) 100%);
     color: #dc3545;
     border: 1px solid rgba(220, 53, 69, 0.3);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
 }
 
 .btn-delete:hover {
-    background: #dc3545;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
     color: white;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
 }
 
 /* =================================
@@ -321,15 +453,13 @@
 
 .campaign-modal,
 .delete-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    display: none !important;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -337,8 +467,9 @@
 
 .campaign-modal.show,
 .delete-modal.show {
-    opacity: 1;
-    visibility: visible;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
 }
 
 .modal-backdrop {
@@ -349,6 +480,7 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(5px);
+    z-index: 1;
 }
 
 .modal-content {
@@ -359,15 +491,31 @@
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
-    position: relative;
-    z-index: 1;
-    transform: translateY(50px);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    transform: translate(-50%, -50%) scale(0.9);
     transition: all 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 .campaign-modal.show .modal-content,
 .delete-modal.show .modal-content {
-    transform: translateY(0);
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Garantir centralização em qualquer resolução */
+@media (max-height: 600px) {
+    .modal-content {
+        max-height: 85vh;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    
+    .campaign-modal.show .modal-content,
+    .delete-modal.show .modal-content {
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 .modal-header {
@@ -455,6 +603,87 @@
     color: var(--text-secondary);
     font-size: 0.8rem;
     margin-top: 0.5rem;
+}
+
+/* Upload de Imagem */
+.image-upload-container {
+    margin-top: 0.5rem;
+}
+
+.upload-options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.btn-upload {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-upload:hover {
+    background: rgba(var(--accent-rgb), 0.8);
+    transform: translateY(-2px);
+}
+
+.upload-separator {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.upload-options input[type="url"] {
+    flex: 1;
+}
+
+.image-preview {
+    position: relative;
+    display: inline-block;
+    margin-top: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+}
+
+.image-preview img {
+    display: block;
+    max-width: 300px;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+}
+
+.btn-remove-image {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.btn-remove-image:hover {
+    background: #dc3545;
+    transform: scale(1.1);
 }
 
 .modal-footer {
