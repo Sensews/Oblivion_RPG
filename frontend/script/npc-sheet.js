@@ -197,6 +197,51 @@ class NpcSheet {
             addAnotacaoBtn.addEventListener('click', () => this.addAnotacao());
         }
 
+        // Botão de reduzir defesa
+        const reduceDefenseBtn = document.getElementById('reduceDefenseBtn');
+        if (reduceDefenseBtn) {
+            reduceDefenseBtn.addEventListener('click', () => this.reduceDefense());
+        }
+
+        // Botão de adicionar movimento
+        const addMovementBtn = document.getElementById('addMovementBtn');
+        if (addMovementBtn) {
+            addMovementBtn.addEventListener('click', () => this.addMovement());
+        }
+
+        // Botão de reset movimento
+        const resetMovementBtn = document.getElementById('resetMovementBtn');
+        if (resetMovementBtn) {
+            resetMovementBtn.addEventListener('click', () => this.resetMovement());
+        }
+
+        // Event listeners para atualizar barras dinâmicas
+        const pvAtualInput = document.getElementById('pvAtual');
+        const pvMaxInput = document.getElementById('pvMax');
+        const defesaInput = document.getElementById('defesa');
+        const defesaMaxInput = document.getElementById('defesaMax');
+        const movimentoInput = document.getElementById('movimento');
+
+        if (pvAtualInput) {
+            pvAtualInput.addEventListener('input', () => this.updateHealthBar());
+        }
+        
+        if (pvMaxInput) {
+            pvMaxInput.addEventListener('input', () => this.updateHealthBar());
+        }
+        
+        if (defesaInput) {
+            defesaInput.addEventListener('input', () => this.updateDefenseBar());
+        }
+        
+        if (defesaMaxInput) {
+            defesaMaxInput.addEventListener('input', () => this.updateDefenseBar());
+        }
+        
+        if (movimentoInput) {
+            movimentoInput.addEventListener('input', () => this.updateMovementDisplay());
+        }
+
         // Detectar mudanças nos campos
         this.bindChangeDetection();
 
@@ -295,7 +340,9 @@ class NpcSheet {
             pv_atual: 0,
             pv_max: 0,
             movimento: '',
+            movimento_percorrido: 0,
             defesa: 0,
+            defesa_max: 0,
             classe_conjuracao: 0,
             classe_manobra: 0,
             atributo_corpo: 0,
@@ -319,6 +366,7 @@ class NpcSheet {
         this.setFieldValue('pvAtual', this.npcData.pv_atual);
         this.setFieldValue('pvMax', this.npcData.pv_max);
         this.setFieldValue('defesa', this.npcData.defesa);
+        this.setFieldValue('defesaMax', this.npcData.defesa_max || this.npcData.defesa);
         this.setFieldValue('movimento', this.npcData.movimento);
 
         // Atributos
@@ -330,6 +378,12 @@ class NpcSheet {
 
         // Imagem
         this.updateAvatar(this.npcData.imagem_url);
+
+        // Atualizar displays dinâmicos
+        this.updateHealthBar();
+        this.updateDefenseBar();
+        this.updateMovementDisplay();
+        this.updateMovementProgress();
 
         // Listas
         this.populateActions(this.npcData.acoes || []);
@@ -961,7 +1015,9 @@ class NpcSheet {
             pv_atual: parseInt(this.getFieldValue('pvAtual')) || 0,
             pv_max: parseInt(this.getFieldValue('pvMax')) || 0,
             movimento: this.getFieldValue('movimento'),
+            movimento_percorrido: this.npcData?.movimento_percorrido || 0,
             defesa: parseInt(this.getFieldValue('defesa')) || 0,
+            defesa_max: parseInt(this.getFieldValue('defesaMax')) || parseInt(this.getFieldValue('defesa')) || 0,
             classe_conjuracao: parseInt(this.getFieldValue('classeConjuracao')) || 0,
             classe_manobra: parseInt(this.getFieldValue('classeManobra')) || 0,
             atributo_corpo: parseInt(this.getFieldValue('atributoCorpo')) || 0,
@@ -1253,6 +1309,176 @@ class NpcSheet {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // ================================
+    // FUNÇÕES PARA BARRAS DINÂMICAS
+    // ================================
+
+    updateHealthBar() {
+        const pvAtual = parseInt(document.getElementById('pvAtual')?.value) || 0;
+        const pvMax = parseInt(document.getElementById('pvMax')?.value) || 0;
+        
+        const healthDisplay = document.getElementById('healthDisplay');
+        const healthFill = document.getElementById('healthFill');
+        
+        if (healthDisplay) {
+            healthDisplay.textContent = `${pvAtual} / ${pvMax}`;
+        }
+        
+        if (healthFill && pvMax > 0) {
+            const percentage = Math.min((pvAtual / pvMax) * 100, 100);
+            healthFill.style.width = `${percentage}%`;
+            
+            // Mudar cor baseado na porcentagem
+            if (percentage > 60) {
+                healthFill.style.background = 'linear-gradient(90deg, #28a745 0%, #5cb85c 50%, #28a745 100%)';
+            } else if (percentage > 30) {
+                healthFill.style.background = 'linear-gradient(90deg, #ffc107 0%, #ffeb3b 50%, #ffc107 100%)';
+            } else {
+                healthFill.style.background = 'linear-gradient(90deg, #dc3545 0%, #ff6b6b 50%, #dc3545 100%)';
+            }
+        }
+    }
+
+    updateDefenseBar() {
+        const defesaAtual = parseInt(document.getElementById('defesa')?.value) || 0;
+        const defesaMax = parseInt(document.getElementById('defesaMax')?.value) || defesaAtual;
+        
+        const defenseValue = document.getElementById('defenseValue');
+        const defenseFill = document.getElementById('defenseFill');
+        
+        if (defenseValue) {
+            defenseValue.textContent = defesaAtual;
+        }
+        
+        if (defenseFill && defesaMax > 0) {
+            const percentage = Math.min((defesaAtual / defesaMax) * 100, 100);
+            defenseFill.style.width = `${percentage}%`;
+            
+            // Mudar cor baseado na porcentagem
+            if (percentage > 70) {
+                defenseFill.style.background = 'linear-gradient(90deg, #007bff 0%, #66b3ff 50%, #007bff 100%)';
+            } else if (percentage > 40) {
+                defenseFill.style.background = 'linear-gradient(90deg, #ffc107 0%, #ffeb3b 50%, #ffc107 100%)';
+            } else {
+                defenseFill.style.background = 'linear-gradient(90deg, #dc3545 0%, #ff6b6b 50%, #dc3545 100%)';
+            }
+        }
+    }
+
+    updateMovementDisplay() {
+        const movimento = document.getElementById('movimento')?.value || '';
+        const movementDisplay = document.getElementById('movementDisplay');
+        
+        if (movementDisplay) {
+            movementDisplay.textContent = movimento || '--';
+        }
+        
+        // Atualizar barra de progresso quando o movimento base mudar
+        this.updateMovementProgress();
+    }
+
+    updateMovementProgress() {
+        const movimentoPercorrido = this.npcData?.movimento_percorrido || 0;
+        const movimentoBase = this.parseMovementValue(document.getElementById('movimento')?.value || '');
+        
+        const movementProgress = document.getElementById('movementProgress');
+        const movementFill = document.getElementById('movementFill');
+        
+        if (movementProgress) {
+            movementProgress.textContent = `${movimentoPercorrido}m / ${movimentoBase}m`;
+        }
+        
+        if (movementFill && movimentoBase > 0) {
+            const percentage = Math.min((movimentoPercorrido / movimentoBase) * 100, 100);
+            movementFill.style.width = `${percentage}%`;
+            
+            // Mudar cor baseado na porcentagem
+            if (percentage >= 100) {
+                movementFill.style.background = 'linear-gradient(90deg, #dc3545 0%, #ff6b6b 50%, #dc3545 100%)';
+            } else if (percentage > 75) {
+                movementFill.style.background = 'linear-gradient(90deg, #ffc107 0%, #ffeb3b 50%, #ffc107 100%)';
+            } else {
+                movementFill.style.background = 'linear-gradient(90deg, #28a745 0%, #5cb85c 50%, #28a745 100%)';
+            }
+        }
+    }
+
+    parseMovementValue(movementString) {
+        // Extrair número do texto de movimento (ex: "30m", "30 metros", "30 pés")
+        const match = movementString.match(/(\d+)/);
+        return match ? parseInt(match[1]) : 30; // Default 30m se não conseguir parsear
+    }
+
+    addMovement() {
+        const movimentoBase = this.parseMovementValue(document.getElementById('movimento')?.value || '');
+        const movimentoAtual = this.npcData?.movimento_percorrido || 0;
+        
+        if (movimentoAtual + 1.5 <= movimentoBase) {
+            this.npcData.movimento_percorrido = Math.round((movimentoAtual + 1.5) * 10) / 10; // Arredondar para 1 casa decimal
+            this.updateMovementProgress();
+            this.markAsChanged();
+            
+            // Feedback visual
+            this.showNotification(`Movimento +1,5m (${this.npcData.movimento_percorrido}m/${movimentoBase}m)`, 'success');
+            
+            // Animação no botão
+            const btn = document.getElementById('addMovementBtn');
+            if (btn) {
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    btn.style.transform = '';
+                }, 150);
+            }
+        } else {
+            const restante = movimentoBase - movimentoAtual;
+            if (restante > 0) {
+                this.showNotification(`Movimento insuficiente! Restam apenas ${restante}m`, 'warning');
+            } else {
+                this.showNotification('Movimento esgotado para este turno!', 'error');
+            }
+        }
+    }
+
+    resetMovement() {
+        if (this.npcData) {
+            this.npcData.movimento_percorrido = 0;
+            this.updateMovementProgress();
+            this.markAsChanged();
+            this.showNotification('Movimento resetado para novo turno', 'info');
+        }
+    }
+
+    reduceDefense() {
+        const defesaInput = document.getElementById('defesa');
+        if (defesaInput) {
+            const currentDefense = parseInt(defesaInput.value) || 0;
+            if (currentDefense > 0) {
+                defesaInput.value = currentDefense - 1;
+                this.updateDefenseBar();
+                this.markAsChanged();
+                
+                // Mostrar feedback visual
+                this.showNotification(`Defesa reduzida para ${currentDefense - 1}`, 'warning');
+                
+                // Animação no botão
+                const btn = document.getElementById('reduceDefenseBtn');
+                if (btn) {
+                    btn.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        btn.style.transform = '';
+                    }, 150);
+                }
+            } else {
+                this.showNotification('A defesa já está em 0!', 'error');
+            }
+        }
+    }
+
+    markAsChanged() {
+        this.hasChanges = true;
+        this.showSaveButton();
     }
 }
 

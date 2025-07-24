@@ -87,22 +87,67 @@
                             <input type="text" id="npcName" placeholder="Digite o nome do NPC" required>
                         </div>
                         
-                        <div class="basic-stats">
-                            <div class="stat-group">
-                                <label for="pvAtual">PV Atual</label>
-                                <input type="number" id="pvAtual" min="0" placeholder="0">
+                        <!-- Seções Compactas -->
+                        <div class="compact-stats">
+                            <!-- Barra de Vida -->
+                            <div class="health-section compact">
+                                <div class="stat-header">
+                                    <h4><i class="fas fa-heart"></i> Vida</h4>
+                                    <span class="stat-display" id="healthDisplay">0/0</span>
+                                </div>
+                                <div class="health-bar compact">
+                                    <div class="health-fill" id="healthFill"></div>
+                                </div>
+                                <div class="stat-inputs">
+                                    <input type="number" id="pvAtual" min="0" placeholder="Atual" title="PV Atual">
+                                    <input type="number" id="pvMax" min="0" placeholder="Máx" title="PV Máximo">
+                                </div>
                             </div>
-                            <div class="stat-group">
-                                <label for="pvMax">PV Máximo</label>
-                                <input type="number" id="pvMax" min="0" placeholder="0">
+
+                            <!-- Seção de Defesa -->
+                            <div class="defense-section compact">
+                                <div class="stat-header">
+                                    <h4><i class="fas fa-shield-alt"></i> Defesa</h4>
+                                    <button class="btn-defense-compact" id="reduceDefenseBtn" title="Reduzir Defesa (-1)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                                <div class="defense-bar compact">
+                                    <div class="defense-fill" id="defenseFill"></div>
+                                    <div class="defense-value" id="defenseValue">0</div>
+                                </div>
+                                <div class="stat-inputs">
+                                    <input type="number" id="defesa" min="0" placeholder="Atual" title="Defesa Atual">
+                                    <input type="number" id="defesaMax" min="0" placeholder="Base" title="Defesa Base">
+                                </div>
                             </div>
-                            <div class="stat-group">
-                                <label for="defesa">Defesa</label>
-                                <input type="number" id="defesa" min="0" placeholder="0">
-                            </div>
-                            <div class="stat-group">
-                                <label for="movimento">Movimento</label>
-                                <input type="text" id="movimento" placeholder="Ex: 30 pés">
+
+                            <!-- Movimento -->
+                            <div class="movement-section compact">
+                                <div class="stat-header">
+                                    <h4><i class="fas fa-running"></i> Movimento</h4>
+                                    <div class="movement-controls">
+                                        <button class="btn-movement-compact" id="addMovementBtn" title="Mover +1,5m">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button class="btn-movement-reset" id="resetMovementBtn" title="Reset Turno">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Movimento Percorrido -->
+                                <div class="movement-progress">
+                                    <div class="movement-bar compact">
+                                        <div class="movement-fill" id="movementFill"></div>
+                                        <span id="movementProgress">0m / 30m</span>
+                                    </div>
+                                </div>
+
+                                <!-- Movimento Base -->
+                                <div class="movement-base">
+                                    <input type="text" id="movimento" placeholder="Ex: 30m" title="Movimento Base">
+                                </div>
                             </div>
                         </div>
                     </div>
