@@ -1,6 +1,27 @@
 /* NPC Sheet Styles - Oblivion RPG */
 
 /* ================================
+   REMOVER SCROLL
+   ================================ */
+
+/* Ocultar scroll da página */
+html, body {
+    overflow: hidden;
+}
+
+/* Permitir scroll interno apenas nos containers necessários */
+.dashboard-main {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.dashboard-main::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+/* ================================
    LAYOUT GERAL
    ================================ */
 
