@@ -155,117 +155,120 @@
 
                 <!-- Seções da Ficha -->
                 <div class="sheet-sections">
-                    <!-- Atributos -->
-                    <div class="section attributes-section">
-                        <h3><i class="fas fa-dumbbell"></i> Atributos</h3>
-                        <div class="attributes-grid">
-                            <div class="attribute">
-                                <label for="atributoCorpo">Corpo</label>
-                                <input type="number" id="atributoCorpo" min="0" placeholder="0">
+                    <!-- Layout Principal - 3 Colunas: Atributos | Ações | Reações -->
+                    <div class="main-layout">
+                        <!-- Atributos -->
+                        <div class="section attributes-section">
+                            <h3><i class="fas fa-dumbbell"></i> Atributos</h3>
+                            <div class="attributes-grid">
+                                <div class="attribute">
+                                    <label for="atributoCorpo">Corpo</label>
+                                    <input type="number" id="atributoCorpo" min="0" placeholder="0">
+                                </div>
+                                <div class="attribute">
+                                    <label for="atributoMente">Mente</label>
+                                    <input type="number" id="atributoMente" min="0" placeholder="0">
+                                </div>
+                                <div class="attribute">
+                                    <label for="atributoAlma">Alma</label>
+                                    <input type="number" id="atributoAlma" min="0" placeholder="0">
+                                </div>
                             </div>
-                            <div class="attribute">
-                                <label for="atributoMente">Mente</label>
-                                <input type="number" id="atributoMente" min="0" placeholder="0">
-                            </div>
-                            <div class="attribute">
-                                <label for="atributoAlma">Alma</label>
-                                <input type="number" id="atributoAlma" min="0" placeholder="0">
-                            </div>
-                        </div>
-                        
-                        <div class="classes-grid">
-                            <div class="class-stat">
-                                <label for="classeConjuracao">Classe de Conjuração</label>
-                                <input type="number" id="classeConjuracao" min="0" placeholder="0">
-                            </div>
-                            <div class="class-stat">
-                                <label for="classeManobra">Classe de Manobra</label>
-                                <input type="number" id="classeManobra" min="0" placeholder="0">
+                            
+                            <div class="classes-grid">
+                                <div class="class-stat">
+                                    <label for="classeConjuracao">C. Conjuração</label>
+                                    <input type="number" id="classeConjuracao" min="0" placeholder="0">
+                                </div>
+                                <div class="class-stat">
+                                    <label for="classeManobra">C. Manobra</label>
+                                    <input type="number" id="classeManobra" min="0" placeholder="0">
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Ações -->
-                    <div class="section actions-section">
-                        <div class="section-header">
-                            <h3><i class="fas fa-bolt"></i> Ações</h3>
-                            <button class="btn-add" id="addActionBtn">
-                                <i class="fas fa-plus"></i>
-                                Adicionar Ação
-                            </button>
+                        <!-- Ações -->
+                        <div class="section acoes-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-bolt"></i> Ações</h3>
+                                <button class="btn-add" id="addActionBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="actions-list" id="actionsList">
+                                <!-- Ações serão adicionadas aqui -->
+                            </div>
                         </div>
-                        <div class="actions-list" id="actionsList">
-                            <!-- Ações serão adicionadas aqui -->
-                        </div>
-                    </div>
 
-                    <!-- Reações -->
-                    <div class="section reactions-section">
-                        <div class="section-header">
-                            <h3><i class="fas fa-shield-alt"></i> Reações</h3>
-                            <button class="btn-add" id="addReactionBtn">
-                                <i class="fas fa-plus"></i>
-                                Adicionar Reação
-                            </button>
-                        </div>
-                        <div class="reactions-list" id="reactionsList">
-                            <!-- Reações serão adicionadas aqui -->
-                        </div>
-                    </div>
-
-                    <!-- Habilidades -->
-                    <div class="section abilities-section">
-                        <div class="section-header">
-                            <h3><i class="fas fa-magic"></i> Habilidades</h3>
-                            <button class="btn-add" id="addAbilityBtn">
-                                <i class="fas fa-plus"></i>
-                                Adicionar Habilidade
-                            </button>
-                        </div>
-                        <div class="abilities-list" id="abilitiesList">
-                            <!-- Habilidades serão adicionadas aqui -->
+                        <!-- Reações -->
+                        <div class="section reacoes-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-shield-alt"></i> Reações</h3>
+                                <button class="btn-add" id="addReactionBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="reactions-list" id="reactionsList">
+                                <!-- Reações serão adicionadas aqui -->
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Pontos Fracos -->
-                    <div class="section weaknesses-section">
-                        <div class="section-header">
-                            <h3><i class="fas fa-heart-broken"></i> Pontos Fracos</h3>
-                            <button class="btn-add" id="addWeaknessBtn">
-                                <i class="fas fa-plus"></i>
-                                Adicionar Ponto Fraco
-                            </button>
+                    <!-- Layout Secundário - 2 Colunas: Habilidades | Pontos Fracos -->
+                    <div class="secondary-layout">
+                        <!-- Habilidades -->
+                        <div class="section habilidades-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-magic"></i> Habilidades</h3>
+                                <button class="btn-add" id="addAbilityBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="abilities-list" id="abilitiesList">
+                                <!-- Habilidades serão adicionadas aqui -->
+                            </div>
                         </div>
-                        <div class="weaknesses-list" id="weaknessesList">
-                            <!-- Pontos fracos serão adicionados aqui -->
+
+                        <!-- Pontos Fracos -->
+                        <div class="section pontos-fracos-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-heart-broken"></i> Pontos Fracos</h3>
+                                <button class="btn-add" id="addWeaknessBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="weaknesses-list" id="weaknessesList">
+                                <!-- Pontos fracos serão adicionados aqui -->
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Saque -->
-                    <div class="section saque-section">
-                        <div class="section-header">
-                            <h3><i class="fas fa-coins"></i> Saque</h3>
-                            <button class="btn-add" id="addSaqueBtn">
-                                <i class="fas fa-plus"></i>
-                                Adicionar Item
-                            </button>
+                    <!-- Layout Final - 2 Colunas: Saque | Anotações -->
+                    <div class="final-layout">
+                        <!-- Saque -->
+                        <div class="section saque-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-coins"></i> Saque</h3>
+                                <button class="btn-add" id="addSaqueBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="saque-list" id="saqueList">
+                                <!-- Itens de saque serão adicionados aqui -->
+                            </div>
                         </div>
-                        <div class="saque-list" id="saqueList">
-                            <!-- Itens de saque serão adicionados aqui -->
-                        </div>
-                    </div>
 
-                    <!-- Anotações -->
-                    <div class="section anotacoes-section">
-                        <div class="section-header">
-                            <h3><i class="fas fa-sticky-note"></i> Anotações</h3>
-                            <button class="btn-add" id="addAnotacaoBtn">
-                                <i class="fas fa-plus"></i>
-                                Adicionar Anotação
-                            </button>
-                        </div>
-                        <div class="anotacoes-list" id="anotacoesList">
-                            <!-- Anotações serão adicionadas aqui -->
+                        <!-- Anotações -->
+                        <div class="section anotacoes-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-sticky-note"></i> Anotações</h3>
+                                <button class="btn-add" id="addAnotacaoBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="anotacoes-list" id="anotacoesList">
+                                <!-- Anotações serão adicionadas aqui -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -295,15 +298,18 @@
 
     <!-- Templates -->
     <template id="actionTemplate">
-        <div class="list-item action-item">
+        <div class="list-item action-item collapsed">
             <div class="item-content">
                 <div class="item-header">
                     <input type="text" class="item-name" placeholder="Nome da ação" required>
                     <div class="item-controls">
                         <div class="quantity-control">
-                            <label>Qtd. Ações:</label>
+                            <label>Qtd:</label>
                             <input type="number" class="action-quantity" min="1" value="1">
                         </div>
+                        <button class="expand-btn" title="Expandir/Colapsar">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
                         <button class="btn-remove" title="Remover">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -324,15 +330,18 @@
     </template>
 
     <template id="reactionTemplate">
-        <div class="list-item reaction-item">
+        <div class="list-item reaction-item collapsed">
             <div class="item-content">
                 <div class="item-header">
                     <input type="text" class="item-name" placeholder="Nome da reação" required>
                     <div class="item-controls">
                         <div class="quantity-control">
-                            <label>Qtd. Reações:</label>
+                            <label>Qtd:</label>
                             <input type="number" class="reaction-quantity" min="1" value="1">
                         </div>
+                        <button class="expand-btn" title="Expandir/Colapsar">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
                         <button class="btn-remove" title="Remover">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -353,13 +362,18 @@
     </template>
 
     <template id="abilityTemplate">
-        <div class="list-item ability-item">
+        <div class="list-item ability-item collapsed">
             <div class="item-content">
                 <div class="item-header">
                     <input type="text" class="item-name" placeholder="Nome da habilidade" required>
-                    <button class="btn-remove" title="Remover">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="item-controls">
+                        <button class="expand-btn" title="Expandir/Colapsar">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <button class="btn-remove" title="Remover">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="item-details">
                     <div class="form-group">
@@ -372,13 +386,18 @@
     </template>
 
     <template id="weaknessTemplate">
-        <div class="list-item weakness-item">
+        <div class="list-item weakness-item collapsed">
             <div class="item-content">
                 <div class="item-header">
                     <input type="text" class="item-name" placeholder="Nome do ponto fraco" required>
-                    <button class="btn-remove" title="Remover">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="item-controls">
+                        <button class="expand-btn" title="Expandir/Colapsar">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <button class="btn-remove" title="Remover">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="item-details">
                     <div class="form-group">
@@ -391,13 +410,18 @@
     </template>
 
     <template id="saqueTemplate">
-        <div class="list-item saque-item">
+        <div class="list-item saque-item collapsed">
             <div class="item-content">
                 <div class="item-header">
                     <input type="text" class="item-name" placeholder="Nome do item" required>
-                    <button class="btn-remove" title="Remover">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="item-controls">
+                        <button class="expand-btn" title="Expandir/Colapsar">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <button class="btn-remove" title="Remover">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="item-details">
                     <div class="form-row">
@@ -423,7 +447,6 @@
         <div class="list-item anotacao-item">
             <div class="item-content">
                 <div class="item-header">
-                    <span class="item-title"><i class="fas fa-sticky-note"></i> Anotação</span>
                     <button class="btn-remove" title="Remover">
                         <i class="fas fa-trash"></i>
                     </button>

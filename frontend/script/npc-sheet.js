@@ -771,13 +771,16 @@ class NpcSheet {
         const effectInput = item.querySelector('.item-effect');
         const extraInput = item.querySelector('.item-extra');
         const removeBtn = item.querySelector('.btn-remove');
+        const expandBtn = item.querySelector('.expand-btn');
+        const actionItem = item.querySelector('.action-item');
 
         console.log('Elementos encontrados no template:', {
             nameInput: !!nameInput,
             quantityInput: !!quantityInput,
             effectInput: !!effectInput,
             extraInput: !!extraInput,
-            removeBtn: !!removeBtn
+            removeBtn: !!removeBtn,
+            expandBtn: !!expandBtn
         });
 
         if (nameInput) nameInput.value = data.nome || '';
@@ -785,11 +788,42 @@ class NpcSheet {
         if (effectInput) effectInput.value = data.efeito || '';
         if (extraInput) extraInput.value = data.extra || '';
 
+        // Funcionalidade de expandir/colapsar
+        if (expandBtn) {
+            expandBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Encontrar o elemento action-item
+                const actionElement = expandBtn.closest('.action-item');
+                if (actionElement) {
+                    actionElement.classList.toggle('collapsed');
+                    
+                    // Atualizar o ícone
+                    const icon = expandBtn.querySelector('i');
+                    if (icon) {
+                        if (actionElement.classList.contains('collapsed')) {
+                            icon.className = 'fas fa-chevron-down';
+                        } else {
+                            icon.className = 'fas fa-chevron-up';
+                        }
+                    }
+                    
+                    console.log('Estado da ação:', actionElement.classList.contains('collapsed') ? 'Colapsado' : 'Expandido');
+                }
+            });
+        }
+
         if (removeBtn) {
             removeBtn.addEventListener('click', (e) => {
-                e.target.closest('.action-item').remove();
-                this.hasChanges = true;
-                this.showSaveButton();
+                e.preventDefault();
+                e.stopPropagation();
+                const actionElement = e.target.closest('.action-item');
+                if (actionElement) {
+                    actionElement.remove();
+                    this.hasChanges = true;
+                    this.showSaveButton();
+                }
             });
         }
 
@@ -806,6 +840,7 @@ class NpcSheet {
         const effectInput = item.querySelector('.item-effect');
         const extraInput = item.querySelector('.item-extra');
         const removeBtn = item.querySelector('.btn-remove');
+        const expandBtn = item.querySelector('.expand-btn');
 
         if (nameInput) nameInput.value = data.nome || '';
         if (quantityInput) quantityInput.value = data.quantidade_reacoes || 1;
@@ -820,6 +855,39 @@ class NpcSheet {
             });
         }
 
+        // Adicionar evento de expand/collapse para reações
+        if (expandBtn) {
+            expandBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const reactionItem = e.target.closest('.reaction-item');
+                const icon = expandBtn.querySelector('i');
+                
+                console.log('=== REACTION EXPAND/COLLAPSE ===');
+                console.log('Current state:', reactionItem.classList.contains('collapsed'));
+                
+                if (reactionItem.classList.contains('collapsed')) {
+                    // Expandir
+                    reactionItem.classList.remove('collapsed');
+                    reactionItem.classList.add('expanded');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-up';
+                    }
+                    console.log('Expandindo reação');
+                } else {
+                    // Colapsar
+                    reactionItem.classList.add('collapsed');
+                    reactionItem.classList.remove('expanded');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-down';
+                    }
+                    console.log('Colapsando reação');
+                }
+            });
+        }
+
+        console.log('=== REACTION ITEM CRIADO ===');
         return item;
     }
 
@@ -830,6 +898,7 @@ class NpcSheet {
         const nameInput = item.querySelector('.item-name');
         const effectInput = item.querySelector('.item-effect');
         const removeBtn = item.querySelector('.btn-remove');
+        const expandBtn = item.querySelector('.expand-btn');
 
         if (nameInput) nameInput.value = data.nome || '';
         if (effectInput) effectInput.value = data.efeito || '';
@@ -839,6 +908,38 @@ class NpcSheet {
                 e.target.closest('.ability-item').remove();
                 this.hasChanges = true;
                 this.showSaveButton();
+            });
+        }
+
+        // Adicionar evento de expand/collapse para habilidades
+        if (expandBtn) {
+            expandBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const abilityItem = e.target.closest('.ability-item');
+                const icon = expandBtn.querySelector('i');
+                
+                console.log('=== ABILITY EXPAND/COLLAPSE ===');
+                console.log('Current state:', abilityItem.classList.contains('collapsed'));
+                
+                if (abilityItem.classList.contains('collapsed')) {
+                    // Expandir
+                    abilityItem.classList.remove('collapsed');
+                    abilityItem.classList.add('expanded');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-up';
+                    }
+                    console.log('Expandindo habilidade');
+                } else {
+                    // Colapsar
+                    abilityItem.classList.add('collapsed');
+                    abilityItem.classList.remove('expanded');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-down';
+                    }
+                    console.log('Colapsando habilidade');
+                }
             });
         }
 
@@ -852,6 +953,7 @@ class NpcSheet {
         const nameInput = item.querySelector('.item-name');
         const effectInput = item.querySelector('.item-effect');
         const removeBtn = item.querySelector('.btn-remove');
+        const expandBtn = item.querySelector('.expand-btn');
 
         if (nameInput) nameInput.value = data.nome || '';
         if (effectInput) effectInput.value = data.efeito || '';
@@ -861,6 +963,38 @@ class NpcSheet {
                 e.target.closest('.weakness-item').remove();
                 this.hasChanges = true;
                 this.showSaveButton();
+            });
+        }
+
+        // Adicionar evento de expand/collapse para pontos fracos
+        if (expandBtn) {
+            expandBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const weaknessItem = e.target.closest('.weakness-item');
+                const icon = expandBtn.querySelector('i');
+                
+                console.log('=== WEAKNESS EXPAND/COLLAPSE ===');
+                console.log('Current state:', weaknessItem.classList.contains('collapsed'));
+                
+                if (weaknessItem.classList.contains('collapsed')) {
+                    // Expandir
+                    weaknessItem.classList.remove('collapsed');
+                    weaknessItem.classList.add('expanded');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-up';
+                    }
+                    console.log('Expandindo ponto fraco');
+                } else {
+                    // Colapsar
+                    weaknessItem.classList.add('collapsed');
+                    weaknessItem.classList.remove('expanded');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-down';
+                    }
+                    console.log('Colapsando ponto fraco');
+                }
             });
         }
 
@@ -876,6 +1010,7 @@ class NpcSheet {
         const custoInput = item.querySelector('.item-custo');
         const descricaoInput = item.querySelector('.item-descricao');
         const removeBtn = item.querySelector('.btn-remove');
+        const expandBtn = item.querySelector('.expand-btn');
 
         if (nameInput) nameInput.value = data.nome_item || '';
         if (pesoInput) pesoInput.value = data.peso || '';
@@ -887,6 +1022,38 @@ class NpcSheet {
                 e.target.closest('.saque-item').remove();
                 this.hasChanges = true;
                 this.showSaveButton();
+            });
+        }
+
+        // Adicionar evento de expand/collapse para saque
+        if (expandBtn) {
+            expandBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const saqueItem = e.target.closest('.saque-item');
+                const icon = expandBtn.querySelector('i');
+                
+                console.log('=== SAQUE EXPAND/COLLAPSE ===');
+                console.log('Current state:', saqueItem.classList.contains('collapsed'));
+                
+                if (saqueItem.classList.contains('collapsed')) {
+                    // Expandir
+                    saqueItem.classList.remove('collapsed');
+                    saqueItem.classList.add('expanded');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-up';
+                    }
+                    console.log('Expandindo saque');
+                } else {
+                    // Colapsar
+                    saqueItem.classList.add('collapsed');
+                    saqueItem.classList.remove('expanded');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-down';
+                    }
+                    console.log('Colapsando saque');
+                }
             });
         }
 
