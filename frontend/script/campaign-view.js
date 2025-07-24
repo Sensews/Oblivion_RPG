@@ -327,9 +327,8 @@ class CampaignView {
     }
 
     openNpcsManager() {
-        this.showNotification('Funcionalidade em desenvolvimento', 'info');
-        // TODO: Implementar navegação para gerenciador de NPCs
-        // window.location.href = `npcs-manager.html?campaign=${this.campaignId}`;
+        // Navegar para o gerenciador de NPCs
+        window.location.href = `npcs-manager.html?campaign=${this.campaignId}`;
     }
 
     openCampaignSettings() {

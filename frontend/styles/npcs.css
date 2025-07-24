@@ -1,0 +1,710 @@
+/* NPCs Manager Styles - Oblivion RPG */
+
+/* Garantir que as variáveis CSS estão disponíveis */
+:root {
+    --accent-color: #d4af37;
+    --glow-color: #f4d03f;
+    --accent-rgb: 212, 175, 55;
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2c2c2c;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: #404040;
+}
+
+/* ================================
+   BOTÕES GERAIS
+   ================================ */
+
+.btn-primary {
+    background: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    text-decoration: none;
+    font-family: inherit;
+    justify-content: center;
+    min-height: 44px;
+}
+
+.btn-primary:hover {
+    background: var(--glow-color);
+    border-color: var(--glow-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(var(--accent-rgb), 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary i {
+    font-size: 0.9rem;
+}
+
+/* ================================
+   LAYOUT GERAL
+   ================================ */
+
+.npcs-container {
+    padding: 2rem 0;
+    position: relative;
+}
+
+.npcs-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -5%;
+    right: -5%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    opacity: 0.3;
+}
+
+/* Header da página */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.page-title-section h1 {
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+}
+
+.page-title-section p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Controles de visualização */
+.view-controls {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.view-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.view-btn:hover {
+    color: var(--accent-color);
+}
+
+.view-btn.active {
+    background: var(--accent-color);
+    color: var(--bg-primary);
+}
+
+/* ================================
+   LOADING E ESTADOS VAZIOS
+   ================================ */
+
+.loading-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+}
+
+.loading-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+}
+
+.loading-state p {
+    font-size: 1.2rem;
+}
+
+/* ================================
+   ESTADO VAZIO (SEM NPCS)
+   ================================ */
+
+.no-npcs {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.5s ease-out;
+}
+
+.no-npcs::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(var(--accent-rgb), 0.05) 50%, transparent 70%);
+    pointer-events: none;
+}
+
+.no-npcs i {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent-color);
+    opacity: 0.7;
+    filter: drop-shadow(0 0 20px rgba(var(--accent-rgb), 0.3));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.no-npcs h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    font-family: 'Orbitron', monospace;
+}
+
+.no-npcs p {
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Botão específico para criar primeiro NPC */
+#createFirstNpcBtn {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-color), var(--glow-color));
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(var(--accent-rgb), 0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: none;
+}
+
+#createFirstNpcBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+    z-index: -1;
+}
+
+#createFirstNpcBtn:hover::before {
+    left: 100%;
+}
+
+#createFirstNpcBtn:hover {
+    background: linear-gradient(135deg, var(--glow-color), var(--accent-color));
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(var(--accent-rgb), 0.4);
+}
+
+#createFirstNpcBtn:active {
+    transform: translateY(-1px);
+}
+
+#createFirstNpcBtn i {
+    font-size: 1.2rem;
+    animation: none;
+    color: #ffffff !important;
+    line-height: 1;
+    margin: 0;
+}
+
+/* Botão específico para criar novo NPC no header */
+#createNpcBtn {
+    white-space: nowrap;
+    background: linear-gradient(135deg, var(--accent-color), var(--glow-color));
+    border: none;
+    box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.25);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#createNpcBtn:hover {
+    background: linear-gradient(135deg, var(--glow-color), var(--accent-color));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(var(--accent-rgb), 0.35);
+}
+
+/* ================================
+   GRID DE NPCS
+   ================================ */
+
+.npcs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    animation: fadeIn 0.5s ease;
+}
+
+.npcs-grid.list-view {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+/* Card do NPC */
+.npc-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.npc-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 8px 25px rgba(var(--accent-rgb), 0.2);
+    transform: translateY(-2px);
+}
+
+.npc-card.list-view {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
+}
+
+/* Avatar do NPC */
+.npc-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 1rem;
+    position: relative;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.npc-card.list-view .npc-avatar {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.npc-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.npc-avatar .avatar-placeholder {
+    font-size: 2rem;
+    color: var(--text-secondary);
+}
+
+/* Informações do NPC */
+.npc-info {
+    text-align: center;
+    flex: 1;
+}
+
+.npc-card.list-view .npc-info {
+    text-align: left;
+}
+
+.npc-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-family: 'Orbitron', monospace;
+}
+
+.npc-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.npc-card.list-view .npc-stats {
+    justify-content: flex-start;
+    gap: 2rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.stat-item i {
+    color: var(--accent-color);
+}
+
+/* Barra de vida */
+.health-bar {
+    margin-bottom: 1rem;
+}
+
+.health-bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.health-progress {
+    height: 8px;
+    background: var(--bg-primary);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e74c3c, #f39c12, #2ecc71);
+    transition: width 0.3s ease;
+}
+
+.health-fill.low {
+    background: #e74c3c;
+}
+
+.health-fill.medium {
+    background: #f39c12;
+}
+
+.health-fill.high {
+    background: #2ecc71;
+}
+
+/* Ações do card */
+.npc-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.npc-card.list-view .npc-actions {
+    margin-top: 0;
+    margin-left: auto;
+}
+
+.action-btn {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background: rgba(var(--accent-rgb), 0.1);
+}
+
+.action-btn.edit-btn:hover {
+    color: #3498db;
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.action-btn.delete-btn:hover {
+    color: #e74c3c;
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* ================================
+   MODAL DE DELETE
+   ================================ */
+
+.delete-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+}
+
+.delete-modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.delete-content {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    z-index: 1;
+    animation: scaleIn 0.3s ease;
+}
+
+.delete-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.delete-header h2 {
+    color: #e74c3c;
+    margin: 0;
+    font-size: 1.3rem;
+    font-family: 'Orbitron', monospace;
+}
+
+.delete-header i {
+    margin-right: 0.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.modal-body p {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.warning-text {
+    color: #e74c3c;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-cancel {
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-cancel:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.btn-delete {
+    background: #e74c3c;
+    border: 2px solid #e74c3c;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+    border-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* ================================
+   RESPONSIVIDADE
+   ================================ */
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .page-actions {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    
+    .page-actions .btn-primary {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .npcs-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .npc-card.list-view {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .npc-card.list-view .npc-info {
+        text-align: center;
+    }
+    
+    .npc-card.list-view .npc-stats {
+        justify-content: space-between;
+    }
+    
+    .npc-card.list-view .npc-actions {
+        margin-left: 0;
+        justify-content: center;
+    }
+    
+    /* Ajustes para estado vazio em mobile */
+    .no-npcs {
+        padding: 2rem 1rem;
+        margin: 1rem 0;
+    }
+    
+    .no-npcs i {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .no-npcs h3 {
+        font-size: 1.5rem;
+    }
+    
+    .no-npcs p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    #createFirstNpcBtn {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+/* ================================
+   ANIMAÇÕES
+   ================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

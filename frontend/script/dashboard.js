@@ -4,10 +4,6 @@
 
 class DashboardManager {
     constructor() {
-        this.settings = {
-            theme: 'dark',
-            secondaryColor: '#ff6b35'
-        };
         this.currentRole = 'jogador'; // Papel atual do usuário
         this.userSession = null;
         this.init();
@@ -15,13 +11,19 @@ class DashboardManager {
 
     init() {
         this.loadUserSession();
-        this.loadSettings();
-        this.applySettings();
+        this.initializeSettings();
         this.bindEvents();
         this.updateNavigation();
+    }
+
+    initializeSettings() {
+        // Inicializar o SettingsManager se não estiver já inicializado
+        if (!window.settingsManager) {
+            window.settingsManager = new SettingsManager();
+        }
         
-        // Garantir que a cor RGB seja calculada na inicialização
-        this.applySecondaryColor(this.settings.secondaryColor);
+        // Aplicar configurações
+        window.settingsManager.applySettings();
     }
 
     // ================================
@@ -114,107 +116,10 @@ class DashboardManager {
     }
 
     // ================================
-    // GERENCIAMENTO DE CONFIGURAÇÕES
-    // ================================
-
-    loadSettings() {
-        // Carregar configurações dos cookies
-        const savedTheme = this.getCookie('oblivion_theme');
-        const savedSecondaryColor = this.getCookie('oblivion_secondary_color');
-
-        if (savedTheme) this.settings.theme = savedTheme;
-        if (savedSecondaryColor) this.settings.secondaryColor = savedSecondaryColor;
-
-        console.log('Configurações carregadas:', this.settings);
-    }
-
-    saveSettings() {
-        // Salvar configurações nos cookies (válidos por 1 ano)
-        this.setCookie('oblivion_theme', this.settings.theme, 365);
-        this.setCookie('oblivion_secondary_color', this.settings.secondaryColor, 365);
-        
-        console.log('Configurações salvas:', this.settings);
-    }
-
-    applySettings() {
-        // Aplicar tema
-        document.body.classList.toggle('light-theme', this.settings.theme === 'light');
-        
-        // Aplicar cor secundária
-        this.applySecondaryColor(this.settings.secondaryColor);
-        
-        // Atualizar UI do modal
-        this.updateSettingsUI();
-    }
-
-    updateSettingsUI() {
-        // Atualizar radio buttons do tema
-        const themeRadios = document.querySelectorAll('input[name="theme"]');
-        themeRadios.forEach(radio => {
-            radio.checked = radio.value === this.settings.theme;
-        });
-
-        // Atualizar color picker e preview
-        const colorPicker = document.getElementById('secondaryColorPicker');
-        const colorPreview = document.getElementById('colorPreview');
-        if (colorPicker && colorPreview) {
-            colorPicker.value = this.settings.secondaryColor;
-            colorPreview.style.backgroundColor = this.settings.secondaryColor;
-        }
-
-        // Atualizar presets de cor
-        this.updateColorPresets();
-    }
-
-    applySecondaryColor(color) {
-        document.documentElement.style.setProperty('--accent-color', color);
-        
-        // Converter hex para RGB para usar com rgba()
-        const rgb = this.hexToRgb(color);
-        if (rgb) {
-            document.documentElement.style.setProperty('--accent-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-        }
-        
-        // Calcular cor de glow baseada na cor escolhida
-        const glowColor = this.hexToRgba(color, 0.6);
-        document.documentElement.style.setProperty('--glow-color', glowColor);
-        
-        // Atualizar border-color
-        const borderColorDark = this.hexToRgba(color, 0.3);
-        const borderColorLight = this.hexToRgba(color, 0.4);
-        document.documentElement.style.setProperty('--border-color', borderColorDark);
-        document.documentElement.style.setProperty('--light-border-color', borderColorLight);
-    }
-
-    updateColorPresets() {
-        const presets = document.querySelectorAll('.color-preset');
-        presets.forEach(preset => {
-            const color = preset.dataset.color;
-            preset.classList.toggle('active', color === this.settings.secondaryColor);
-        });
-    }
-
-    resetSettings() {
-        this.settings = {
-            theme: 'dark',
-            secondaryColor: '#ff6b35'
-        };
-        this.applySettings();
-        this.saveSettings();
-        this.showNotification('Configurações restauradas para o padrão!', 'success');
-    }
-
-    // ================================
     // EVENT LISTENERS
     // ================================
 
     bindEvents() {
-        // Botão de configurações
-        const settingsBtn = document.getElementById('settingsBtn');
-        if (settingsBtn) {
-            settingsBtn.addEventListener('click', () => this.openSettingsModal());
-        }
-
         // Botão de logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
@@ -246,108 +151,6 @@ class DashboardManager {
                 }
             });
         }
-
-        // Modal de configurações
-        this.bindSettingsModalEvents();
-    }
-
-    bindSettingsModalEvents() {
-        const modal = document.getElementById('settingsModal');
-        const backdrop = document.getElementById('settingsBackdrop');
-        const closeBtn = document.getElementById('closeSettings');
-        const saveBtn = document.getElementById('saveSettings');
-        const resetBtn = document.getElementById('resetSettings');
-
-        // Fechar modal
-        [backdrop, closeBtn].forEach(element => {
-            if (element) {
-                element.addEventListener('click', () => this.closeSettingsModal());
-            }
-        });
-
-        // Salvar configurações
-        if (saveBtn) {
-            saveBtn.addEventListener('click', () => this.handleSaveSettings());
-        }
-
-        // Resetar configurações
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => {
-                if (confirm('Tem certeza que deseja restaurar as configurações padrão?')) {
-                    this.resetSettings();
-                }
-            });
-        }
-
-        // Theme toggle
-        const themeRadios = document.querySelectorAll('input[name="theme"]');
-        themeRadios.forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.settings.theme = e.target.value;
-                this.applySettings();
-            });
-        });
-
-        // Color picker
-        const colorPicker = document.getElementById('secondaryColorPicker');
-        if (colorPicker) {
-            colorPicker.addEventListener('input', (e) => {
-                this.settings.secondaryColor = e.target.value;
-                this.applySettings();
-            });
-        }
-
-        // Color presets
-        const colorPresets = document.querySelectorAll('.color-preset');
-        colorPresets.forEach(preset => {
-            preset.addEventListener('click', () => {
-                const color = preset.dataset.color;
-                this.settings.secondaryColor = color;
-                this.applySettings();
-            });
-        });
-
-        // Fechar modal com ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('show')) {
-                this.closeSettingsModal();
-            }
-        });
-    }
-
-    // ================================
-    // MODAL DE CONFIGURAÇÕES
-    // ================================
-
-    openSettingsModal() {
-        const modal = document.getElementById('settingsModal');
-        if (modal) {
-            modal.style.display = 'block';
-            document.body.classList.add('modal-open');
-            
-            // Pequeno delay para permitir a transição
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
-        }
-    }
-
-    closeSettingsModal() {
-        const modal = document.getElementById('settingsModal');
-        if (modal) {
-            modal.classList.remove('show');
-            document.body.classList.remove('modal-open');
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-    }
-
-    handleSaveSettings() {
-        this.saveSettings();
-        this.showNotification('Configurações salvas com sucesso!', 'success');
-        this.closeSettingsModal();
     }
 
     // ================================
@@ -428,40 +231,6 @@ class DashboardManager {
             notification.classList.remove('show');
             setTimeout(() => document.body.removeChild(notification), 300);
         }, 3000);
-    }
-
-    // ================================
-    // UTILITÁRIOS
-    // ================================
-
-    hexToRgba(hex, alpha) {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
-
-    hexToRgb(hex) {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
-
-    setCookie(name, value, days) {
-        const expires = new Date(Date.now() + days * 864e5).toUTCString();
-        document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
-    }
-
-    getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) {
-            return decodeURIComponent(parts.pop().split(';').shift());
-        }
-        return null;
     }
 }
 

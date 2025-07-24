@@ -290,36 +290,44 @@
             </div>
 
             <div class="modal-body">
-                <!-- Tema -->
+                <!-- Modo Escuro/Claro -->
                 <div class="setting-group">
                     <div class="setting-header">
-                        <i class="fas fa-palette"></i>
-                        <label>Tema</label>
+                        <i class="fas fa-moon"></i>
+                        <label>Tema da Interface</label>
                     </div>
                     <div class="theme-toggle">
-                        <input type="radio" id="darkTheme" name="theme" value="dark" checked>
-                        <label for="darkTheme">Escuro</label>
-                        <input type="radio" id="lightTheme" name="theme" value="light">
-                        <label for="lightTheme">Claro</label>
+                        <input type="radio" id="darkMode" name="theme" value="dark" checked>
+                        <label for="darkMode">
+                            <i class="fas fa-moon"></i>
+                            Modo Escuro
+                        </label>
+                        <input type="radio" id="lightMode" name="theme" value="light">
+                        <label for="lightMode">
+                            <i class="fas fa-sun"></i>
+                            Modo Claro
+                        </label>
                     </div>
                 </div>
 
                 <!-- Cor Secundária -->
                 <div class="setting-group">
                     <div class="setting-header">
-                        <i class="fas fa-color-palette"></i>
+                        <i class="fas fa-palette"></i>
                         <label>Cor Secundária</label>
                     </div>
                     <div class="color-picker-container">
                         <div class="color-preview" id="colorPreview"></div>
                         <input type="color" id="secondaryColorPicker" value="#ff6b35">
-                        <div class="color-presets" id="colorPresets">
-                            <div class="color-preset active" data-color="#ff6b35" title="Laranja (Padrão)"></div>
-                            <div class="color-preset" data-color="#e74c3c" title="Vermelho"></div>
-                            <div class="color-preset" data-color="#3498db" title="Azul"></div>
-                            <div class="color-preset" data-color="#2ecc71" title="Verde"></div>
-                            <div class="color-preset" data-color="#9b59b6" title="Roxo"></div>
-                            <div class="color-preset" data-color="#f39c12" title="Amarelo"></div>
+                        <div class="color-presets">
+                            <button class="color-preset" data-color="#ff6b35" style="background-color: #ff6b35;"></button>
+                            <button class="color-preset" data-color="#4ecdc4" style="background-color: #4ecdc4;"></button>
+                            <button class="color-preset" data-color="#45b7d1" style="background-color: #45b7d1;"></button>
+                            <button class="color-preset" data-color="#96ceb4" style="background-color: #96ceb4;"></button>
+                            <button class="color-preset" data-color="#feca57" style="background-color: #feca57;"></button>
+                            <button class="color-preset" data-color="#ff9ff3" style="background-color: #ff9ff3;"></button>
+                            <button class="color-preset" data-color="#54a0ff" style="background-color: #54a0ff;"></button>
+                            <button class="color-preset" data-color="#5f27cd" style="background-color: #5f27cd;"></button>
                         </div>
                     </div>
                 </div>
@@ -348,6 +356,7 @@
 
     <!-- Scripts -->
     <script src="../script/route-protection.js"></script>
+    <script src="../script/utils/settings-manager.js"></script>
     <script src="../script/dashboard.js"></script>
     <script src="../script/campaign-view.js"></script>
 

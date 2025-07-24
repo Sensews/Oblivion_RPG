@@ -41,6 +41,18 @@ class RouteProtection {
                 errorMessage: 'Você precisa estar logado para acessar esta página'
             },
             
+            'npcs-manager.html': {
+                type: 'login_required',
+                redirectTo: 'login.html',
+                errorMessage: 'Você precisa estar logado para acessar esta página'
+            },
+            
+            'npc-sheet.html': {
+                type: 'login_required',
+                redirectTo: 'login.html',
+                errorMessage: 'Você precisa estar logado para acessar esta página'
+            },
+            
             'profile.html': {
                 type: 'login_required',
                 redirectTo: 'login.html',
