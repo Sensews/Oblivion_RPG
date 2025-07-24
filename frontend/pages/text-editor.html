@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Personagens - Oblivion RPG</title>
+    <title>Editor de Texto - Oblivion RPG</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
-    <link rel="stylesheet" href="../styles/characters.css">
+    <link rel="stylesheet" href="../styles/text-editor.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Quill.js CSS para rich text editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 <body style="opacity: 0; transition: opacity 0.3s ease;">
     <!-- Header/Navbar -->
@@ -25,15 +28,17 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
-                    <li><a href="#" class="nav-link active"><i class="fas fa-users"></i> Gerenciar Personagens</a></li>
+                    <li><a href="campaigns.html" class="nav-link"><i class="fas fa-gamepad"></i> Campanhas</a></li>
+                    <li><a href="#" class="nav-link" id="campaignLink"><i class="fas fa-scroll"></i> <span id="navCampaignName">Campanha</span></a></li>
+                    <li><a href="#" class="nav-link active"><i class="fas fa-edit"></i> Editor</a></li>
                 </ul>
             </nav>
 
             <div class="header-actions">
-                <button class="btn-settings" id="settingsBtn">
+                <button class="btn-settings" id="settingsBtn" title="Configurações">
                     <i class="fas fa-cog"></i>
                 </button>
-                <button class="btn-logout" id="logoutBtn">
+                <button class="btn-logout" id="logoutBtn" title="Sair">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
@@ -41,35 +46,62 @@
     </header>
 
     <!-- Conteúdo Principal -->
-    <main class="dashboard-main">
-        <div class="dashboard-content">
-            <div class="page-header">
-                <h1><i class="fas fa-users"></i> Gerenciar Personagens</h1>
-                <p>Crie e gerencie seus personagens de RPG</p>
+    <main class="editor-main">
+        <div class="editor-container">
+            <!-- Header do Editor -->
+            <div class="editor-header">
+                <div class="editor-title-section">
+                    <input type="text" 
+                           id="documentTitle" 
+                           class="document-title-input" 
+                           placeholder="Digite o título do documento..."
+                           maxlength="255">
+                </div>
+                
+                <div class="editor-actions">
+                    <button class="btn-secondary" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                        Voltar
+                    </button>
+                    <button class="btn-secondary" id="saveBtn">
+                        <i class="fas fa-save"></i>
+                        Salvar
+                    </button>
+                    <button class="btn-primary" id="saveAndExitBtn">
+                        <i class="fas fa-check"></i>
+                        Salvar e Sair
+                    </button>
+                </div>
             </div>
 
-            <div class="characters-grid">
-                <!-- Container para o botão de criar centralizado -->
-                <div class="create-character-container">
-                    <div class="character-card create-new" id="createCharacterBtn">
-                        <div class="create-icon">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <h3>Criar Novo Personagem</h3>
-                        <p>Dê vida a um novo herói</p>
-                    </div>
-                </div>
+            <!-- Informações do Documento -->
+            <div class="document-info" id="documentInfo" style="display: none;">
+                <span id="lastModified">Última modificação: --</span>
+                <span id="createdAt">Criado em: --</span>
+            </div>
 
-                <!-- Container para personagens existentes com scroll -->
-                <div class="existing-characters-container">
-                    <div class="existing-characters-grid" id="existingCharacters">
-                        <!-- Mensagem inicial que será substituída pelo JavaScript -->
-                        <p class="no-characters">Nenhum personagem criado ainda.</p>
-                    </div>
+            <!-- Editor -->
+            <div class="editor-content">
+                <div id="editor">
+                    <!-- O Quill.js será inicializado aqui -->
                 </div>
+            </div>
+            
+            <!-- Status do documento -->
+            <div class="editor-status">
+                <span id="documentStatus">Novo documento</span>
+                <span id="autoSaveStatus"></span>
             </div>
         </div>
     </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-dragon fa-spin"></i>
+            <p>Carregando editor...</p>
+        </div>
+    </div>
 
     <!-- Modal de Configurações -->
     <div class="settings-modal" id="settingsModal" style="display: none;">
@@ -83,11 +115,11 @@
             </div>
 
             <div class="modal-body">
-                <!-- Tema -->
+                <!-- Modo Escuro/Claro -->
                 <div class="setting-group">
                     <div class="setting-header">
-                        <i class="fas fa-palette"></i>
-                        <label>Tema</label>
+                        <i class="fas fa-moon"></i>
+                        <label>Tema da Interface</label>
                     </div>
                     <div class="theme-toggle">
                         <input type="radio" id="darkMode" name="theme" value="dark" checked>
@@ -139,87 +171,12 @@
         </div>
     </div>
 
-    <!-- Modal para Criar/Editar Personagem -->
-    <div class="character-modal" id="characterModal" style="display: none;">
-        <div class="modal-backdrop" id="characterBackdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="characterModalTitle"><i class="fas fa-plus"></i> Criar Novo Personagem</h2>
-                <button class="modal-close" id="closeCharacterModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <form id="characterForm">
-                    <input type="hidden" id="characterId" value="">
-                    
-                    <div class="form-group">
-                        <label for="characterName">Nome do Personagem</label>
-                        <input type="text" id="characterName" name="nome" required maxlength="100" placeholder="Digite o nome do personagem">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="characterImage">URL da Imagem</label>
-                        <input type="url" id="characterImage" name="foto_url" placeholder="https://exemplo.com/imagem.jpg">
-                        <small>Cole a URL de uma imagem para representar seu personagem</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="characterCampaign">Campanha</label>
-                        <select id="characterCampaign" name="campanha_id">
-                            <option value="">Nenhuma campanha</option>
-                            <!-- Campanhas serão carregadas via JavaScript -->
-                        </select>
-                        <small>Escolha uma campanha para este personagem (opcional)</small>
-                    </div>
-                </form>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" id="cancelCharacter">
-                    <i class="fas fa-times"></i>
-                    Cancelar
-                </button>
-                <button type="submit" form="characterForm" class="btn-save" id="saveCharacter">
-                    <i class="fas fa-save"></i>
-                    Salvar Personagem
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Confirmação de Delete -->
-    <div class="delete-modal" id="deleteModal" style="display: none;">
-        <div class="modal-backdrop" id="deleteBackdrop"></div>
-        <div class="modal-content delete-content">
-            <div class="modal-header delete-header">
-                <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
-            </div>
-
-            <div class="modal-body">
-                <p>Tem certeza que deseja excluir o personagem <strong id="deleteCharacterName"></strong>?</p>
-                <p class="warning-text">Esta ação não pode ser desfeita!</p>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" id="cancelDelete">
-                    <i class="fas fa-times"></i>
-                    Cancelar
-                </button>
-                <button type="button" class="btn-delete" id="confirmDelete">
-                    <i class="fas fa-trash"></i>
-                    Excluir Personagem
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Scripts -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script src="../script/route-protection.js"></script>
     <script src="../script/utils/settings-manager.js"></script>
     <script src="../script/dashboard.js"></script>
-    <script src="../script/characters.js"></script>
+    <script src="../script/text-editor.js"></script>
 
     <script>
         // Mostrar a página após validação de autenticação

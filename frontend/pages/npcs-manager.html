@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Personagens - Oblivion RPG</title>
+    <title id="pageTitle">Gerenciar NPCs - Oblivion RPG</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
-    <link rel="stylesheet" href="../styles/characters.css">
+    <link rel="stylesheet" href="../styles/campaign-view.css">
+    <link rel="stylesheet" href="../styles/npcs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,7 +26,9 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
-                    <li><a href="#" class="nav-link active"><i class="fas fa-users"></i> Gerenciar Personagens</a></li>
+                    <li><a href="campaigns.html" class="nav-link"><i class="fas fa-gamepad"></i> Campanhas</a></li>
+                    <li><a href="#" class="nav-link" id="campaignLink"><i class="fas fa-scroll"></i> <span id="navCampaignName">Campanha</span></a></li>
+                    <li><a href="#" class="nav-link active"><i class="fas fa-mask"></i> NPCs</a></li>
                 </ul>
             </nav>
 
@@ -43,29 +46,53 @@
     <!-- Conteúdo Principal -->
     <main class="dashboard-main">
         <div class="dashboard-content">
+            <!-- Header da página -->
             <div class="page-header">
-                <h1><i class="fas fa-users"></i> Gerenciar Personagens</h1>
-                <p>Crie e gerencie seus personagens de RPG</p>
-            </div>
-
-            <div class="characters-grid">
-                <!-- Container para o botão de criar centralizado -->
-                <div class="create-character-container">
-                    <div class="character-card create-new" id="createCharacterBtn">
-                        <div class="create-icon">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <h3>Criar Novo Personagem</h3>
-                        <p>Dê vida a um novo herói</p>
+                <div class="page-title-section">
+                    <h1><i class="fas fa-mask"></i> Gerenciar NPCs</h1>
+                    <p id="campaignSubtitle">Crie e gerencie NPCs da campanha</p>
+                </div>
+                
+                <div class="page-actions">
+                    <button class="btn-primary" id="createNpcBtn">
+                        <i class="fas fa-plus"></i>
+                        Criar Novo NPC
+                    </button>
+                    
+                    <!-- Controles de visualização -->
+                    <div class="view-controls">
+                        <button class="view-btn active" id="gridViewBtn" title="Visualização em Grade">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" id="listViewBtn" title="Visualização em Lista">
+                            <i class="fas fa-list"></i>
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Container para personagens existentes com scroll -->
-                <div class="existing-characters-container">
-                    <div class="existing-characters-grid" id="existingCharacters">
-                        <!-- Mensagem inicial que será substituída pelo JavaScript -->
-                        <p class="no-characters">Nenhum personagem criado ainda.</p>
-                    </div>
+            <!-- Container dos NPCs -->
+            <div class="npcs-container">
+                <!-- Loading State -->
+                <div class="loading-state" id="npcsLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Carregando NPCs...</p>
+                </div>
+                
+                <!-- No NPCs State -->
+                <div class="no-npcs" id="noNpcs" style="display: none;">
+                    <i class="fas fa-mask"></i>
+                    <h3>Nenhum NPC encontrado</h3>
+                    <p>Esta campanha ainda não possui NPCs. Crie o primeiro NPC!</p>
+                    <button class="btn-primary" id="createFirstNpcBtn">
+                        <i class="fas fa-plus"></i>
+                        Criar Primeiro NPC
+                    </button>
+                </div>
+                
+                <!-- NPCs Grid/List -->
+                <div class="npcs-grid" id="npcsGrid" style="display: none;">
+                    <!-- NPCs will be populated here -->
                 </div>
             </div>
         </div>
@@ -83,11 +110,11 @@
             </div>
 
             <div class="modal-body">
-                <!-- Tema -->
+                <!-- Modo Escuro/Claro -->
                 <div class="setting-group">
                     <div class="setting-header">
-                        <i class="fas fa-palette"></i>
-                        <label>Tema</label>
+                        <i class="fas fa-moon"></i>
+                        <label>Tema da Interface</label>
                     </div>
                     <div class="theme-toggle">
                         <input type="radio" id="darkMode" name="theme" value="dark" checked>
@@ -139,58 +166,8 @@
         </div>
     </div>
 
-    <!-- Modal para Criar/Editar Personagem -->
-    <div class="character-modal" id="characterModal" style="display: none;">
-        <div class="modal-backdrop" id="characterBackdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="characterModalTitle"><i class="fas fa-plus"></i> Criar Novo Personagem</h2>
-                <button class="modal-close" id="closeCharacterModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <form id="characterForm">
-                    <input type="hidden" id="characterId" value="">
-                    
-                    <div class="form-group">
-                        <label for="characterName">Nome do Personagem</label>
-                        <input type="text" id="characterName" name="nome" required maxlength="100" placeholder="Digite o nome do personagem">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="characterImage">URL da Imagem</label>
-                        <input type="url" id="characterImage" name="foto_url" placeholder="https://exemplo.com/imagem.jpg">
-                        <small>Cole a URL de uma imagem para representar seu personagem</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="characterCampaign">Campanha</label>
-                        <select id="characterCampaign" name="campanha_id">
-                            <option value="">Nenhuma campanha</option>
-                            <!-- Campanhas serão carregadas via JavaScript -->
-                        </select>
-                        <small>Escolha uma campanha para este personagem (opcional)</small>
-                    </div>
-                </form>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" id="cancelCharacter">
-                    <i class="fas fa-times"></i>
-                    Cancelar
-                </button>
-                <button type="submit" form="characterForm" class="btn-save" id="saveCharacter">
-                    <i class="fas fa-save"></i>
-                    Salvar Personagem
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal de Confirmação de Delete -->
-    <div class="delete-modal" id="deleteModal" style="display: none;">
+    <div class="delete-modal" id="deleteModal">
         <div class="modal-backdrop" id="deleteBackdrop"></div>
         <div class="modal-content delete-content">
             <div class="modal-header delete-header">
@@ -198,7 +175,7 @@
             </div>
 
             <div class="modal-body">
-                <p>Tem certeza que deseja excluir o personagem <strong id="deleteCharacterName"></strong>?</p>
+                <p>Tem certeza que deseja excluir o NPC <strong id="deleteNpcName"></strong>?</p>
                 <p class="warning-text">Esta ação não pode ser desfeita!</p>
             </div>
 
@@ -209,9 +186,17 @@
                 </button>
                 <button type="button" class="btn-delete" id="confirmDelete">
                     <i class="fas fa-trash"></i>
-                    Excluir Personagem
+                    Excluir NPC
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-dragon fa-spin"></i>
+            <p>Processando...</p>
         </div>
     </div>
 
@@ -219,7 +204,7 @@
     <script src="../script/route-protection.js"></script>
     <script src="../script/utils/settings-manager.js"></script>
     <script src="../script/dashboard.js"></script>
-    <script src="../script/characters.js"></script>
+    <script src="../script/npcs-manager.js"></script>
 
     <script>
         // Mostrar a página após validação de autenticação

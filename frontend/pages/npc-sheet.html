@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Ficha do NPC - Oblivion RPG</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/npc-sheet.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="opacity: 0; transition: opacity 0.3s ease;">
+    <!-- Header/Navbar -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo clickable" id="logoHome">
+                    <i class="fas fa-dragon"></i>
+                    <h1>Oblivion RPG</h1>
+                </div>
+            </div>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="campaigns.html" class="nav-link"><i class="fas fa-gamepad"></i> Campanhas</a></li>
+                    <li><a href="#" class="nav-link" id="campaignLink"><i class="fas fa-scroll"></i> <span id="navCampaignName">Campanha</span></a></li>
+                    <li><a href="#" class="nav-link" id="npcsLink"><i class="fas fa-mask"></i> NPCs</a></li>
+                    <li><a href="#" class="nav-link active"><i class="fas fa-id-card"></i> <span id="navNpcName">Ficha</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn-save" id="saveNpcBtn" style="display: none;">
+                    <i class="fas fa-save"></i>
+                    Salvar
+                </button>
+                <button class="btn-settings" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="dashboard-main">
+        <div class="dashboard-content">
+            <!-- Loading State -->
+            <div class="loading-state" id="npcLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Carregando ficha do NPC...</p>
+            </div>
+
+            <!-- Ficha do NPC -->
+            <div class="npc-sheet" id="npcSheet" style="display: none;">
+                <!-- Header da Ficha -->
+                <div class="sheet-header">
+                    <div class="npc-avatar-section">
+                        <div class="npc-avatar clickable" id="npcAvatar" title="Clique para alterar a imagem">
+                            <img id="npcImage" src="" alt="Avatar do NPC" style="display: none;">
+                            <div class="avatar-placeholder" id="avatarPlaceholder">
+                                <i class="fas fa-mask"></i>
+                                <div class="avatar-hint">Clique para adicionar imagem</div>
+                            </div>
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                        
+                        <div class="image-url-input" id="imageUrlInput" style="display: none;">
+                            <input type="url" id="imageUrlField" placeholder="Cole a URL da imagem aqui">
+                            <button class="btn-confirm" id="confirmImageUrl">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn-cancel" id="cancelImageUrl">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="npc-basic-info">
+                        <div class="form-group">
+                            <label for="npcName">Nome do NPC</label>
+                            <input type="text" id="npcName" placeholder="Digite o nome do NPC" required>
+                        </div>
+                        
+                        <div class="basic-stats">
+                            <div class="stat-group">
+                                <label for="pvAtual">PV Atual</label>
+                                <input type="number" id="pvAtual" min="0" placeholder="0">
+                            </div>
+                            <div class="stat-group">
+                                <label for="pvMax">PV Máximo</label>
+                                <input type="number" id="pvMax" min="0" placeholder="0">
+                            </div>
+                            <div class="stat-group">
+                                <label for="defesa">Defesa</label>
+                                <input type="number" id="defesa" min="0" placeholder="0">
+                            </div>
+                            <div class="stat-group">
+                                <label for="movimento">Movimento</label>
+                                <input type="text" id="movimento" placeholder="Ex: 30 pés">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seções da Ficha -->
+                <div class="sheet-sections">
+                    <!-- Atributos -->
+                    <div class="section attributes-section">
+                        <h3><i class="fas fa-dumbbell"></i> Atributos</h3>
+                        <div class="attributes-grid">
+                            <div class="attribute">
+                                <label for="atributoCorpo">Corpo</label>
+                                <input type="number" id="atributoCorpo" min="0" placeholder="0">
+                            </div>
+                            <div class="attribute">
+                                <label for="atributoMente">Mente</label>
+                                <input type="number" id="atributoMente" min="0" placeholder="0">
+                            </div>
+                            <div class="attribute">
+                                <label for="atributoAlma">Alma</label>
+                                <input type="number" id="atributoAlma" min="0" placeholder="0">
+                            </div>
+                        </div>
+                        
+                        <div class="classes-grid">
+                            <div class="class-stat">
+                                <label for="classeConjuracao">Classe de Conjuração</label>
+                                <input type="number" id="classeConjuracao" min="0" placeholder="0">
+                            </div>
+                            <div class="class-stat">
+                                <label for="classeManobra">Classe de Manobra</label>
+                                <input type="number" id="classeManobra" min="0" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="section actions-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-bolt"></i> Ações</h3>
+                            <button class="btn-add" id="addActionBtn">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Ação
+                            </button>
+                        </div>
+                        <div class="actions-list" id="actionsList">
+                            <!-- Ações serão adicionadas aqui -->
+                        </div>
+                    </div>
+
+                    <!-- Reações -->
+                    <div class="section reactions-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-shield-alt"></i> Reações</h3>
+                            <button class="btn-add" id="addReactionBtn">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Reação
+                            </button>
+                        </div>
+                        <div class="reactions-list" id="reactionsList">
+                            <!-- Reações serão adicionadas aqui -->
+                        </div>
+                    </div>
+
+                    <!-- Habilidades -->
+                    <div class="section abilities-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-magic"></i> Habilidades</h3>
+                            <button class="btn-add" id="addAbilityBtn">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Habilidade
+                            </button>
+                        </div>
+                        <div class="abilities-list" id="abilitiesList">
+                            <!-- Habilidades serão adicionadas aqui -->
+                        </div>
+                    </div>
+
+                    <!-- Pontos Fracos -->
+                    <div class="section weaknesses-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-heart-broken"></i> Pontos Fracos</h3>
+                            <button class="btn-add" id="addWeaknessBtn">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Ponto Fraco
+                            </button>
+                        </div>
+                        <div class="weaknesses-list" id="weaknessesList">
+                            <!-- Pontos fracos serão adicionados aqui -->
+                        </div>
+                    </div>
+
+                    <!-- Saque -->
+                    <div class="section saque-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-coins"></i> Saque</h3>
+                            <button class="btn-add" id="addSaqueBtn">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Item
+                            </button>
+                        </div>
+                        <div class="saque-list" id="saqueList">
+                            <!-- Itens de saque serão adicionados aqui -->
+                        </div>
+                    </div>
+
+                    <!-- Anotações -->
+                    <div class="section anotacoes-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-sticky-note"></i> Anotações</h3>
+                            <button class="btn-add" id="addAnotacaoBtn">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Anotação
+                            </button>
+                        </div>
+                        <div class="anotacoes-list" id="anotacoesList">
+                            <!-- Anotações serão adicionadas aqui -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="sheet-actions">
+                    <button class="btn-secondary" id="backToNpcsBtn">
+                        <i class="fas fa-arrow-left"></i>
+                        Voltar aos NPCs
+                    </button>
+                    <button class="btn-primary" id="saveSheetBtn">
+                        <i class="fas fa-save"></i>
+                        Salvar Ficha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-dragon fa-spin"></i>
+            <p>Salvando ficha...</p>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="actionTemplate">
+        <div class="list-item action-item">
+            <div class="item-content">
+                <div class="item-header">
+                    <input type="text" class="item-name" placeholder="Nome da ação" required>
+                    <div class="item-controls">
+                        <div class="quantity-control">
+                            <label>Qtd. Ações:</label>
+                            <input type="number" class="action-quantity" min="1" value="1">
+                        </div>
+                        <button class="btn-remove" title="Remover">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="item-details">
+                    <div class="form-group">
+                        <label>Efeito</label>
+                        <textarea class="item-effect" placeholder="Descreva o efeito da ação" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Extra</label>
+                        <input type="text" class="item-extra" placeholder="Informações adicionais">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="reactionTemplate">
+        <div class="list-item reaction-item">
+            <div class="item-content">
+                <div class="item-header">
+                    <input type="text" class="item-name" placeholder="Nome da reação" required>
+                    <div class="item-controls">
+                        <div class="quantity-control">
+                            <label>Qtd. Reações:</label>
+                            <input type="number" class="reaction-quantity" min="1" value="1">
+                        </div>
+                        <button class="btn-remove" title="Remover">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="item-details">
+                    <div class="form-group">
+                        <label>Efeito</label>
+                        <textarea class="item-effect" placeholder="Descreva o efeito da reação" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Extra</label>
+                        <input type="text" class="item-extra" placeholder="Informações adicionais">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="abilityTemplate">
+        <div class="list-item ability-item">
+            <div class="item-content">
+                <div class="item-header">
+                    <input type="text" class="item-name" placeholder="Nome da habilidade" required>
+                    <button class="btn-remove" title="Remover">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="item-details">
+                    <div class="form-group">
+                        <label>Efeito</label>
+                        <textarea class="item-effect" placeholder="Descreva o efeito da habilidade" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="weaknessTemplate">
+        <div class="list-item weakness-item">
+            <div class="item-content">
+                <div class="item-header">
+                    <input type="text" class="item-name" placeholder="Nome do ponto fraco" required>
+                    <button class="btn-remove" title="Remover">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="item-details">
+                    <div class="form-group">
+                        <label>Efeito</label>
+                        <textarea class="item-effect" placeholder="Descreva o efeito do ponto fraco" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="saqueTemplate">
+        <div class="list-item saque-item">
+            <div class="item-content">
+                <div class="item-header">
+                    <input type="text" class="item-name" placeholder="Nome do item" required>
+                    <button class="btn-remove" title="Remover">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="item-details">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Peso</label>
+                            <input type="number" class="item-peso" placeholder="0" min="0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Custo</label>
+                            <input type="number" class="item-custo" placeholder="0" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea class="item-descricao" placeholder="Descreva o item" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="anotacaoTemplate">
+        <div class="list-item anotacao-item">
+            <div class="item-content">
+                <div class="item-header">
+                    <span class="item-title"><i class="fas fa-sticky-note"></i> Anotação</span>
+                    <button class="btn-remove" title="Remover">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="item-details">
+                    <div class="form-group">
+                        <textarea class="item-texto" placeholder="Digite sua anotação aqui..." rows="4"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Modal de Escolha de Imagem -->
+    <div class="image-choice-modal" id="imageChoiceModal" style="display: none;">
+        <div class="modal-backdrop" id="imageChoiceBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-image"></i> Escolher Imagem</h2>
+                <button class="modal-close" id="closeImageChoice">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="image-options">
+                    <div class="image-option" id="uploadImageOption">
+                        <div class="option-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h3>Enviar Arquivo</h3>
+                        <p>Faça upload de uma imagem do seu computador. A imagem será comprimida automaticamente.</p>
+                        <button class="btn-option" id="chooseUpload">
+                            <i class="fas fa-folder-open"></i>
+                            Escolher Arquivo
+                        </button>
+                    </div>
+
+                    <div class="image-option" id="urlImageOption">
+                        <div class="option-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <h3>URL da Imagem</h3>
+                        <p>Cole o link de uma imagem hospedada na internet.</p>
+                        <button class="btn-option" id="chooseUrl">
+                            <i class="fas fa-link"></i>
+                            Inserir URL
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-info">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Processando imagem...</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="upload-details" id="uploadDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Configurações -->
+    <div class="settings-modal" id="settingsModal" style="display: none;">
+        <div class="modal-backdrop" id="settingsBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Configurações</h2>
+                <button class="modal-close" id="closeSettings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Modo Escuro/Claro -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-moon"></i>
+                        <label>Tema da Interface</label>
+                    </div>
+                    <div class="theme-toggle">
+                        <input type="radio" id="darkMode" name="theme" value="dark" checked>
+                        <label for="darkMode">
+                            <i class="fas fa-moon"></i>
+                            Modo Escuro
+                        </label>
+                        <input type="radio" id="lightMode" name="theme" value="light">
+                        <label for="lightMode">
+                            <i class="fas fa-sun"></i>
+                            Modo Claro
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Cor Secundária -->
+                <div class="setting-group">
+                    <div class="setting-header">
+                        <i class="fas fa-palette"></i>
+                        <label>Cor Secundária</label>
+                    </div>
+                    <div class="color-picker-container">
+                        <div class="color-preview" id="colorPreview"></div>
+                        <input type="color" id="secondaryColorPicker" value="#ff6b35">
+                        <div class="color-presets">
+                            <button class="color-preset" data-color="#ff6b35" style="background-color: #ff6b35;"></button>
+                            <button class="color-preset" data-color="#4ecdc4" style="background-color: #4ecdc4;"></button>
+                            <button class="color-preset" data-color="#45b7d1" style="background-color: #45b7d1;"></button>
+                            <button class="color-preset" data-color="#96ceb4" style="background-color: #96ceb4;"></button>
+                            <button class="color-preset" data-color="#feca57" style="background-color: #feca57;"></button>
+                            <button class="color-preset" data-color="#ff9ff3" style="background-color: #ff9ff3;"></button>
+                            <button class="color-preset" data-color="#54a0ff" style="background-color: #54a0ff;"></button>
+                            <button class="color-preset" data-color="#5f27cd" style="background-color: #5f27cd;"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-reset" id="resetSettings">
+                    <i class="fas fa-undo"></i>
+                    Restaurar Padrão
+                </button>
+                <button class="btn-save" id="saveSettings">
+                    <i class="fas fa-save"></i>
+                    Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../script/route-protection.js"></script>
+    <script src="../script/utils/settings-manager.js"></script>
+    <script src="../script/dashboard.js"></script>
+    <script src="../script/npc-sheet.js"></script>
+
+    <script>
+        // Mostrar a página após validação de autenticação
+        document.addEventListener('DOMContentLoaded', () => {
+            // O route-protection já validou a autenticação
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
