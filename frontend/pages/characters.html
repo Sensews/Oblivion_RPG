@@ -49,7 +49,7 @@
             </div>
 
             <div class="characters-grid">
-                <!-- Container para o botão de criar centralizado -->
+                <!-- Card de criar personagem centralizado -->
                 <div class="create-character-container">
                     <div class="character-card create-new" id="createCharacterBtn">
                         <div class="create-icon">
@@ -57,6 +57,21 @@
                         </div>
                         <h3>Criar Novo Personagem</h3>
                         <p>Dê vida a um novo herói</p>
+                    </div>
+                </div>
+
+                <!-- Controles: Toggle de visualização (apenas acima dos cards existentes) -->
+                <div class="view-controls">
+                    <div class="view-controls-content">
+                        <span class="view-label">Visualização:</span>
+                        <div class="view-toggle">
+                            <button class="toggle-button active" id="gridViewBtn" title="Visualização em Grade">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="toggle-button" id="listViewBtn" title="Visualização em Lista">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 

@@ -1048,6 +1048,10 @@ class CharacterCreationModal {
         const maxPoints = this.creationData.maxPoints + negativeCount;
 
         if (action === 'increase') {
+            // Verificar se já atingiu o limite máximo de 3 para o atributo
+            if (currentValue >= 3) {
+                return; // Não permite aumentar além de 3
+            }
             if (this.creationData.pointsUsed < maxPoints) {
                 newValue = currentValue + 1;
                 this.creationData.pointsUsed++;
@@ -1188,9 +1192,11 @@ class CharacterCreationModal {
         Object.keys(this.creationData.attributes).forEach(attr => {
             const increaseBtn = document.querySelector(`[data-attr="${attr}"][data-action="increase"]`);
             const decreaseBtn = document.querySelector(`[data-attr="${attr}"][data-action="decrease"]`);
+            const currentValue = this.creationData.attributes[attr];
             
             if (increaseBtn) {
-                increaseBtn.disabled = this.creationData.pointsUsed >= maxPoints;
+                // Desabilita se atingiu o máximo de pontos OU se o atributo já está em 3
+                increaseBtn.disabled = this.creationData.pointsUsed >= maxPoints || currentValue >= 3;
             }
             
             if (decreaseBtn) {
@@ -1366,46 +1372,111 @@ class CharacterCreationModal {
             return;
         }
 
-        // Validate file size (5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            this.showNotification('A imagem deve ter no máximo 5MB', 'error');
+        // Validate file size (10MB - aumentado porque vamos compactar)
+        if (file.size > 10 * 1024 * 1024) {
+            this.showNotification('A imagem deve ter no máximo 10MB', 'error');
             return;
         }
 
         try {
-            const formData = new FormData();
-            formData.append('image', file);
-            formData.append('crop_square', 'true');
-            formData.append('max_size', '400');
-
-            const response = await fetch(window.getBackendPath() + 'upload-image.php', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                // Update preview
-                const preview = document.getElementById('imagePreview');
-                if (preview) {
-                    preview.innerHTML = `<img src="${data.data.base64}" alt="Preview">`;
-                }
-
-                // Update hidden input
-                const input = document.getElementById('characterImageData');
-                if (input) {
-                    input.value = data.data.base64;
-                }
-
-                this.showNotification('Imagem carregada com sucesso!', 'success');
-            } else {
-                throw new Error(data.error || 'Erro ao fazer upload da imagem');
+            // Mostrar feedback de processamento
+            const preview = document.getElementById('imagePreview');
+            if (preview) {
+                preview.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-color); margin-bottom: 0.5rem;"></i>
+                        <span style="color: var(--accent-color); font-size: 0.9rem;">Processando imagem...</span>
+                    </div>
+                `;
             }
+            
+            // Compactar e redimensionar a imagem no frontend
+            const compressedBase64 = await this.compressImage(file, 400, 0.8);
+            
+            // Update preview
+            if (preview) {
+                preview.innerHTML = `<img src="${compressedBase64}" alt="Preview">`;
+            }
+
+            // Update hidden input
+            const input = document.getElementById('characterImageData');
+            if (input) {
+                input.value = compressedBase64;
+            }
+
+            this.showNotification('Imagem carregada com sucesso!', 'success');
+            
         } catch (error) {
-            console.error('Erro no upload:', error);
-            this.showNotification('Erro ao fazer upload da imagem', 'error');
+            console.error('Erro no processamento da imagem:', error);
+            this.showNotification('Erro ao processar a imagem', 'error');
+            
+            // Restaurar preview original em caso de erro
+            const preview = document.getElementById('imagePreview');
+            if (preview) {
+                preview.innerHTML = `
+                    <i class="fas fa-user"></i>
+                    <span>Clique para adicionar imagem</span>
+                `;
+            }
         }
+    }
+
+    /**
+     * Compacta e redimensiona uma imagem
+     * @param {File} file - Arquivo de imagem
+     * @param {number} maxSize - Tamanho máximo (largura/altura)
+     * @param {number} quality - Qualidade JPEG (0-1)
+     * @returns {Promise<string>} - Base64 da imagem compactada
+     */
+    async compressImage(file, maxSize = 400, quality = 0.8) {
+        return new Promise((resolve, reject) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = () => {
+                // Calcular dimensões mantendo proporção
+                let { width, height } = img;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+                }
+
+                // Configurar canvas
+                canvas.width = width;
+                canvas.height = height;
+
+                // Desenhar imagem redimensionada
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Converter para base64 com compressão
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                
+                // Verificar se a compressão foi efetiva
+                const originalSize = file.size;
+                const compressedSize = Math.round((compressedDataUrl.length * 3) / 4); // Aproximação do tamanho base64
+                
+                console.log(`Imagem compactada: ${originalSize} bytes → ${compressedSize} bytes (${Math.round((1 - compressedSize/originalSize) * 100)}% redução)`);
+                
+                resolve(compressedDataUrl);
+            };
+
+            img.onerror = () => reject(new Error('Erro ao carregar a imagem'));
+            
+            // Carregar arquivo como data URL
+            const reader = new FileReader();
+            reader.onload = (e) => img.src = e.target.result;
+            reader.onerror = () => reject(new Error('Erro ao ler o arquivo'));
+            reader.readAsDataURL(file);
+        });
     }
 
     generateSummary() {

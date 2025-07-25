@@ -9,12 +9,14 @@ class CharactersManager {
         this.editingCharacterId = null;
         this.deletingCharacterId = null;
         this.userSession = null;
+        this.currentView = 'grid'; // 'grid' ou 'list'
         this.init();
     }
 
     init() {
         this.loadUserSession();
         this.bindEvents();
+        this.loadViewPreference();
         this.loadCampaigns();
         this.loadCharacters();
     }
@@ -53,6 +55,18 @@ class CharactersManager {
             createBtn.addEventListener('click', () => this.openCreateModal());
         }
 
+        // Toggle de visualização
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        
+        if (gridViewBtn) {
+            gridViewBtn.addEventListener('click', () => this.setViewMode('grid'));
+        }
+        
+        if (listViewBtn) {
+            listViewBtn.addEventListener('click', () => this.setViewMode('list'));
+        }
+
         // Modal de edição de personagem (simples)
         const characterModal = document.getElementById('characterModal');
         const characterBackdrop = document.getElementById('characterBackdrop');
@@ -85,6 +99,42 @@ class CharactersManager {
 
         if (confirmDelete) {
             confirmDelete.addEventListener('click', () => this.deleteCharacter());
+        }
+    }
+
+    // ================================
+    // GERENCIAMENTO DE VISUALIZAÇÃO
+    // ================================
+
+    setViewMode(mode) {
+        this.currentView = mode;
+        
+        // Atualizar botões
+        const gridBtn = document.getElementById('gridViewBtn');
+        const listBtn = document.getElementById('listViewBtn');
+        
+        if (gridBtn && listBtn) {
+            gridBtn.classList.toggle('active', mode === 'grid');
+            listBtn.classList.toggle('active', mode === 'list');
+        }
+        
+        // Atualizar container
+        const container = document.getElementById('existingCharacters');
+        if (container) {
+            container.className = mode === 'list' ? 'existing-characters-list' : 'existing-characters-grid';
+        }
+        
+        // Salvar preferência
+        localStorage.setItem('oblivion_characters_view', mode);
+        
+        // Re-renderizar personagens para aplicar o novo layout
+        this.renderCharacters();
+    }
+
+    loadViewPreference() {
+        const savedView = localStorage.getItem('oblivion_characters_view');
+        if (savedView && ['grid', 'list'].includes(savedView)) {
+            this.setViewMode(savedView);
         }
     }
 
@@ -172,7 +222,7 @@ class CharactersManager {
             <div class="character-card existing" data-id="${character.id}">
                 <div class="character-image ${character.foto_url ? '' : 'no-image'}">
                     ${character.foto_url 
-                        ? `<img src="${character.foto_url}" alt="${character.nome}" onerror="this.parentElement.innerHTML='<i class=\\"fas fa-user\\"></i>'">` 
+                        ? `<img src="${character.foto_url}" alt="${character.nome}" data-character-id="${character.id}">` 
                         : '<i class="fas fa-user"></i>'
                     }
                 </div>
@@ -208,6 +258,26 @@ class CharactersManager {
                 </div>
             </div>
         `).join('');
+
+        // Adicionar event listeners para tratar erros de imagem
+        this.setupImageErrorHandling();
+    }
+
+    setupImageErrorHandling() {
+        const images = document.querySelectorAll('.character-image img');
+        images.forEach(img => {
+            img.addEventListener('error', (e) => {
+                const imageContainer = e.target.parentElement;
+                if (imageContainer && imageContainer.classList.contains('character-image')) {
+                    imageContainer.classList.add('no-image');
+                    imageContainer.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            });
+            
+            img.addEventListener('load', (e) => {
+                e.target.style.opacity = '1';
+            });
+        });
     }
 
     // ================================

@@ -49,11 +49,13 @@
 
 /* Container para personagens existentes com scroll */
 .existing-characters-container {
-    max-height: 650px; /* Altura para aprox 2 linhas de cards */
+    max-height: 700px; /* Altura aumentada para acomodar os cards maiores */
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible; /* Permitir overflow horizontal para hover effects */
     padding-right: 10px; /* Espaço para a scrollbar */
+    padding-left: 10px; /* Espaço para hover effects à esquerda */
     min-height: 200px; /* Altura mínima para mostrar a mensagem */
+    padding-bottom: 2rem; /* Espaço extra no final para hover effects */
 }
 
 /* Grid para personagens existentes (5 colunas max) */
@@ -126,95 +128,618 @@
     box-sizing: border-box;
 }
 
-/* Card de Personagem */
-.character-card {
-    background: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 15px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    min-height: 300px;
-    max-height: 320px;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    box-sizing: border-box;
+/* Layout Principal dos Personagens */
+.dashboard-content {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow: visible; /* Permitir hover effects */
 }
 
-.character-card::before {
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.characters-grid {
+    overflow: visible; /* Garantir que hover effects não sejam cortados */
+    position: relative;
+}
+
+/* Container do botão criar */
+.create-character-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+/* Controles de visualização (apenas toggle, acima dos cards) */
+.view-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
+}
+
+.view-controls-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg-secondary);
+    padding: 0.8rem 1.2rem;
+    border-radius: 15px;
+    border: 2px solid rgba(var(--accent-rgb), 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Toggle de Visualização */
+.view-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-secondary);
+    border: 2px solid rgba(var(--accent-rgb), 0.2);
+    border-radius: 12px;
+    padding: 0.3rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.toggle-button.active {
+    background: var(--accent-color);
+    color: white;
+    box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.3);
+}
+
+.toggle-button:hover:not(.active) {
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--accent-color);
+}
+
+.view-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+/* Container dos personagens existentes */
+.existing-characters-container {
+    width: 100%;
+}
+
+/* Visualização em Grid (padrão) */
+.existing-characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem 1rem; /* Padding maior para dar espaço aos hover effects */
+    /* Importante: overflow visible para não cortar animações */
+    overflow: visible;
+    min-height: min-content;
+    margin: 1rem 0; /* Margem para evitar corte dos hover effects */
+}
+
+/* Visualização em Lista */
+.existing-characters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem 1rem; /* Mesmo padding que o grid */
+    overflow: visible;
+    margin: 1rem 0; /* Mesma margem que o grid */
+}
+
+.existing-characters-list .character-card.existing {
+    height: auto;
+    min-height: 120px;
+    flex-direction: row;
+    align-items: center;
+    padding: 1.5rem;
+    gap: 1.5rem;
+}
+
+.existing-characters-list .character-image {
+    width: 80px;
+    height: 80px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.existing-characters-list .character-info {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.existing-characters-list .character-name {
+    text-align: left;
+    margin-bottom: 0;
+    grid-column: 1;
+}
+
+.existing-characters-list .character-stats {
+    grid-column: 2;
+    margin: 0;
+    padding: 0.3rem; /* Reduzido de 0.5rem */
+    display: flex;
+    gap: 0.5rem; /* Reduzido de 1rem */
+    justify-content: center;
+}
+
+.existing-characters-list .character-campaign {
+    grid-column: 3;
+    margin: 0;
+    padding: 0.5rem 0.8rem;
+    text-align: center;
+}
+
+.existing-characters-list .character-actions {
+    grid-column: 4;
+    margin: 0;
+    padding: 0;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.existing-characters-list .stat-item {
+    flex-direction: column;
+    text-align: center;
+    padding: 0.3rem; /* Reduzido de 0.4rem */
+    min-width: 50px; /* Reduzido de 60px */
+    font-size: 0.8rem; /* Fonte menor */
+}
+
+.existing-characters-list .stat-item i {
+    margin-bottom: 0.1rem; /* Reduzido de 0.2rem */
+    font-size: 0.9rem;
+}
+
+/* Responsividade para lista */
+@media (max-width: 768px) {
+    .existing-characters-list .character-info {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .existing-characters-list .character-name,
+    .existing-characters-list .character-stats,
+    .existing-characters-list .character-campaign,
+    .existing-characters-list .character-actions {
+        grid-column: 1;
+    }
+    
+    .existing-characters-list .character-card.existing {
+        flex-direction: column;
+        height: auto;
+        min-height: 200px;
+    }
+    
+    .existing-characters-list .character-image {
+        align-self: center;
+    }
+}
+
+/* Responsividade para controles */
+@media (max-width: 768px) {
+    .create-character-container {
+        margin-bottom: 1.5rem;
+    }
+    
+    .view-controls {
+        margin-bottom: 1rem;
+        padding: 0 0.5rem;
+    }
+    
+    .view-controls-content {
+        padding: 0.6rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .character-card.create-new {
+        max-width: 100%;
+        width: 100%;
+        height: 180px;
+        padding: 2rem 1.5rem;
+    }
+    
+    .character-card.create-new .create-icon {
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        min-height: 60px;
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+        aspect-ratio: 1 / 1;
+    }
+    
+    .character-card.create-new .create-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .character-card.create-new h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .character-card.create-new p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .view-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .view-controls-content {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0.5rem 0.8rem;
+    }
+    
+    .view-label {
+        font-size: 0.8rem;
+    }
+    
+    .character-card.create-new {
+        height: 160px;
+        padding: 1.5rem 1rem;
+        max-width: 95%;
+    }
+    
+    .character-card.create-new .create-icon {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        min-height: 50px;
+        margin-bottom: 0.8rem;
+        flex-shrink: 0;
+        aspect-ratio: 1 / 1;
+    }
+    
+    .character-card.create-new .create-icon i {
+        font-size: 1.3rem;
+    }
+    
+    .character-card.create-new h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .character-card.create-new p {
+        font-size: 0.85rem;
+    }
+    
+    .character-card.create-new:hover {
+        transform: translateY(-4px) scale(1.02);
+    }
+}
+
+/* Card de Criar Novo Personagem - Design Premium */
+.character-card.create-new {
+    background: linear-gradient(145deg, 
+        var(--bg-secondary) 0%, 
+        rgba(var(--accent-rgb), 0.08) 50%,
+        var(--bg-secondary) 100%);
+    border: 2px solid transparent;
+    background-image: 
+        linear-gradient(145deg, var(--bg-secondary), rgba(var(--accent-rgb), 0.08)),
+        linear-gradient(145deg, 
+            rgba(var(--accent-rgb), 0.4) 0%, 
+            rgba(var(--accent-rgb), 0.8) 50%, 
+            rgba(var(--accent-rgb), 0.4) 100%);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    border-radius: 25px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    width: 100%;
+    max-width: 380px;
+    height: 220px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.12),
+        0 0 20px rgba(var(--accent-rgb), 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.character-card.create-new::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(var(--accent-rgb), 0.15) 50%, 
+        transparent 70%);
+    opacity: 0;
+    transition: all 0.6s ease;
+    transform: rotate(-45deg);
+    z-index: 1;
+}
+
+.character-card.create-new:hover::before {
+    opacity: 1;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(-45deg); }
+    50% { transform: translateX(0%) translateY(0%) rotate(-45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(-45deg); }
+}
+
+.character-card.create-new:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.25),
+        0 0 30px rgba(var(--accent-rgb), 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    background-image: 
+        linear-gradient(145deg, var(--bg-secondary), rgba(var(--accent-rgb), 0.12)),
+        linear-gradient(145deg, 
+            rgba(var(--accent-rgb), 0.6) 0%, 
+            var(--accent-color) 50%, 
+            rgba(var(--accent-rgb), 0.6) 100%);
+}
+
+/* Ícone de Criar - Design Premium */
+.character-card.create-new .create-icon {
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+    min-height: 70px;
+    background: linear-gradient(135deg, 
+        var(--accent-color) 0%, 
+        rgba(var(--accent-rgb), 0.9) 30%,
+        var(--accent-color) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    z-index: 2;
+    box-shadow: 
+        0 8px 16px rgba(var(--accent-rgb), 0.3),
+        0 0 20px rgba(var(--accent-rgb), 0.2),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+}
+
+.character-card.create-new .create-icon::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        var(--accent-color) 0%, 
+        rgba(var(--accent-rgb), 0.7) 25%,
+        var(--accent-color) 50%,
+        rgba(var(--accent-rgb), 0.7) 75%,
+        var(--accent-color) 100%);
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    aspect-ratio: 1 / 1;
+}
+
+.character-card.create-new:hover .create-icon::before {
+    opacity: 1;
+    animation: borderGlow 2s linear infinite;
+}
+
+@keyframes borderGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.character-card.create-new .create-icon i {
+    font-size: 1.8rem;
+    color: white;
+    transition: all 0.4s ease;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 3;
+    position: relative;
+}
+
+.character-card.create-new:hover .create-icon {
+    transform: scale(1.15) rotate(90deg);
+    box-shadow: 
+        0 12px 24px rgba(var(--accent-rgb), 0.4),
+        0 0 30px rgba(var(--accent-rgb), 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.character-card.create-new:hover .create-icon i {
+    transform: rotate(-90deg) scale(1.1);
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Texto do Card Criar - Design Premium */
+.character-card.create-new h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, 
+        var(--text-primary) 0%, 
+        var(--accent-color) 50%,
+        var(--text-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    transition: all 0.4s ease;
+}
+
+.character-card.create-new:hover h3 {
+    background: linear-gradient(135deg, 
+        var(--accent-color) 0%, 
+        #ffffff 50%,
+        var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: scale(1.05);
+    filter: drop-shadow(0 2px 4px rgba(var(--accent-rgb), 0.3));
+}
+
+.character-card.create-new p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.8;
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.character-card.create-new:hover p {
+    color: rgba(255, 255, 255, 0.9);
+    opacity: 1;
+    transform: translateY(-2px);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Efeitos de Partículas (opcional) */
+.character-card.create-new::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.05) 0%, transparent 50%);
-    pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, 
+        rgba(var(--accent-rgb), 0.1) 0%, 
+        transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+    border-radius: 25px;
 }
 
-.character-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-color);
-    box-shadow: 0 10px 25px rgba(var(--accent-rgb), 0.3);
+.character-card.create-new:hover::after {
+    opacity: 1;
+    animation: pulse 2s ease-in-out infinite;
 }
 
-/* Card para Criar Novo Personagem */
-.character-card.create-new {
-    border: 2px dashed var(--border-color);
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 320px;
-    max-width: 320px;
-    min-width: 320px;
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.05); opacity: 0.1; }
 }
 
-.character-card.create-new:hover {
-    border-color: var(--accent-color);
-    background: rgba(var(--accent-rgb), 0.05);
+/* Estados de Focus para Acessibilidade */
+.character-card.create-new:focus {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 4px;
+    transform: translateY(-4px) scale(1.02);
 }
 
-.create-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(var(--accent-rgb), 0.1);
+.character-card.create-new:active {
+    transform: translateY(-2px) scale(0.98);
+    transition: all 0.1s ease;
+}
+
+/* Cards de Personagens Existentes - Versão Compacta */
+.character-card.existing {
+    background: linear-gradient(145deg, 
+        var(--bg-secondary) 0%, 
+        rgba(var(--accent-rgb), 0.03) 100%);
+    border: 2px solid rgba(var(--accent-rgb), 0.15);
+    border-radius: 18px;
+    padding: 1.2rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: visible; /* Permitir hover effects */
+    height: 350px; /* Altura ligeiramente reduzida */
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    transition: all 0.3s ease;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    z-index: 1;
+    margin-bottom: 1rem; /* Espaço para animações de hover */
 }
 
-.create-icon i {
-    font-size: 2.5rem;
-    color: var(--accent-color);
+.character-card.existing::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(var(--accent-rgb), 0.2) 50%, 
+        transparent 70%);
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
 }
 
-.character-card.create-new:hover .create-icon {
-    background: var(--accent-color);
-    transform: scale(1.1);
+.character-card.existing:hover::before {
+    opacity: 1;
 }
 
-.character-card.create-new:hover .create-icon i {
-    color: white;
-}
-
-.character-card.create-new h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-}
-
-.character-card.create-new p {
-    color: var(--text-secondary);
-    margin: 0;
+.character-card.existing:hover {
+    transform: translateY(-6px) scale(1.01);
+    border-color: rgba(var(--accent-rgb), 0.4);
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.12),
+        0 0 15px rgba(var(--accent-rgb), 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    z-index: 10; /* Garante que o card fique sobre outros durante hover */
 }
 
 /* Card de Personagem Existente */
@@ -222,133 +747,310 @@
     cursor: default;
 }
 
+/* Container da Imagem - Versão Compacta */
 .character-image {
-    width: 100%;
-    height: 150px;
-    background: var(--bg-secondary);
-    border-radius: 10px;
-    margin-bottom: 1rem;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.08) 0%, 
+        rgba(var(--accent-rgb), 0.03) 100%);
+    border-radius: 15px;
+    margin: 0 auto 1rem auto;
     overflow: hidden;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid rgba(var(--accent-rgb), 0.2);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.character-image:hover {
+    transform: scale(1.05);
+    border-color: rgba(var(--accent-rgb), 0.4);
+    box-shadow: 
+        0 6px 18px rgba(0, 0, 0, 0.15),
+        0 0 12px rgba(var(--accent-rgb), 0.3);
 }
 
 .character-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 13px;
+    opacity: 0;
+    animation: fadeInImage 0.3s ease forwards;
+    transition: all 0.3s ease;
+}
+
+@keyframes fadeInImage {
+    to {
+        opacity: 1;
+    }
 }
 
 .character-image.no-image {
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(var(--accent-rgb), 0.1) 100%);
-    color: var(--text-secondary);
-    font-size: 3rem;
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.12) 0%, 
+        rgba(var(--accent-rgb), 0.06) 100%);
+    color: rgba(var(--accent-rgb), 0.7);
+    font-size: 2rem;
+    transition: all 0.3s ease;
+}
+
+.character-image.no-image:hover {
+    color: var(--accent-color);
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.18) 0%, 
+        rgba(var(--accent-rgb), 0.10) 100%);
 }
 
 .character-info {
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    z-index: 2;
+    padding: 0;
 }
 
 .character-name {
     font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, 
+        var(--text-primary) 0%, 
+        var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: all 0.3s ease;
+}
+
+.character-name:hover {
+    transform: scale(1.03);
+    text-shadow: 0 2px 4px rgba(var(--accent-rgb), 0.2);
 }
 
 .character-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin: 0.5rem 0;
+    gap: 0.8rem;
+    margin: 1rem 0;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.05) 0%, 
+        rgba(var(--accent-rgb), 0.02) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(var(--accent-rgb), 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+}
+
+.character-card:hover .character-stats {
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.08) 0%, 
+        rgba(var(--accent-rgb), 0.04) 100%);
+    border-color: rgba(var(--accent-rgb), 0.2);
 }
 
 .stat-item {
-    background: var(--bg-primary);
-    padding: 0.5rem;
-    border-radius: 5px;
+    background: linear-gradient(135deg, 
+        var(--bg-primary) 0%, 
+        rgba(var(--accent-rgb), 0.01) 100%);
+    padding: 0.6rem;
+    border-radius: 8px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.stat-item:hover {
+    transform: translateY(-1px);
+    border-color: rgba(var(--accent-rgb), 0.2);
+    background: linear-gradient(135deg, 
+        var(--bg-primary) 0%, 
+        rgba(var(--accent-rgb), 0.04) 100%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .stat-item i {
     color: var(--accent-color);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover i {
+    transform: scale(1.1);
+}
+
+.stat-item span {
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
     font-size: 0.8rem;
+}
+
+.stat-item:hover span {
+    color: var(--accent-color);
 }
 
 .character-campaign {
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    font-size: 0.85rem;
+
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.05) 0%, 
+        rgba(var(--accent-rgb), 0.02) 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(var(--accent-rgb), 0.1);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.character-campaign:hover {
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.08) 0%, 
+        rgba(var(--accent-rgb), 0.04) 100%);
+    border-color: rgba(var(--accent-rgb), 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .character-campaign i {
     color: var(--accent-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.character-campaign:hover i {
+    transform: scale(1.1);
 }
 
 .character-campaign.no-campaign {
     color: var(--text-muted);
     font-style: italic;
+    background: linear-gradient(135deg, 
+        rgba(128, 128, 128, 0.03) 0%, 
+        rgba(128, 128, 128, 0.01) 100%);
+    border-color: rgba(128, 128, 128, 0.1);
+}
+
+.character-campaign.no-campaign:hover {
+    background: linear-gradient(135deg, 
+        rgba(128, 128, 128, 0.05) 0%, 
+        rgba(128, 128, 128, 0.02) 100%);
+    border-color: rgba(128, 128, 128, 0.15);
 }
 
 .character-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.6rem;
     margin-top: auto;
+    padding-top: 0.5rem; /* Reduzido de 0.8rem para aproximar dos botões */
+    width: 100%; /* Garante que os botões ocupem toda a largura disponível */
+    flex-shrink: 0; /* Evita que a seção seja comprimida */
 }
 
 .btn-edit,
 .btn-delete {
     flex: 1;
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 0.8rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid transparent;
 }
 
 .btn-edit {
-    background: rgba(var(--accent-rgb), 0.1);
+    background: linear-gradient(135deg, 
+        rgba(var(--accent-rgb), 0.12) 0%, 
+        rgba(var(--accent-rgb), 0.06) 100%);
     color: var(--accent-color);
-    border: 1px solid var(--border-color);
+    border-color: rgba(var(--accent-rgb), 0.2);
 }
 
 .btn-edit:hover {
-    background: var(--accent-color);
+    background: linear-gradient(135deg, 
+        var(--accent-color) 0%, 
+        rgba(var(--accent-rgb), 0.9) 100%);
     color: white;
     transform: translateY(-2px);
+    border-color: var(--accent-color);
+    box-shadow: 
+        0 4px 12px rgba(var(--accent-rgb), 0.3),
+        0 0 8px rgba(var(--accent-rgb), 0.2);
+}
+
+.btn-edit i {
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.btn-edit:hover i {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .btn-delete {
-    background: rgba(220, 53, 69, 0.1);
+    background: linear-gradient(135deg, 
+        rgba(220, 53, 69, 0.12) 0%, 
+        rgba(220, 53, 69, 0.06) 100%);
     color: #dc3545;
-    border: 1px solid rgba(220, 53, 69, 0.3);
+    border-color: rgba(220, 53, 69, 0.2);
 }
 
 .btn-delete:hover {
-    background: #dc3545;
+    background: linear-gradient(135deg, 
+        #dc3545 0%, 
+        #c82333 100%);
     color: white;
     transform: translateY(-2px);
+    border-color: #dc3545;
+    box-shadow: 
+        0 4px 12px rgba(220, 53, 69, 0.3),
+        0 0 8px rgba(220, 53, 69, 0.2);
+}
+
+.btn-delete i {
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.btn-delete:hover i {
+    transform: scale(1.1) rotate(-5deg);
 }
 
 /* =================================
@@ -3119,5 +3821,142 @@ input:checked + .toggle-slider:before {
         font-size: 1.1rem;
         min-width: 45px;
         padding: 0.25rem 0.5rem;
+    }
+}
+
+/* =================================
+   RESPONSIVIDADE DOS CARDS COMPACTOS
+================================= */
+
+@media (max-width: 1400px) {
+    .existing-characters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-content {
+        padding: 1rem;
+    }
+    
+    .create-character-container {
+        margin-bottom: 2rem;
+    }
+    
+    .character-card.create-new {
+        width: 100%;
+        max-width: 320px;
+        height: 180px;
+    }
+    
+    .existing-characters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.2rem;
+    }
+    
+    .character-card.existing {
+        height: 320px;
+        padding: 1.2rem;
+    }
+    
+    .character-card.existing:hover {
+        transform: translateY(-6px) scale(1.01);
+    }
+    
+    .character-image {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 0.8rem;
+    }
+    
+    .character-name {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .character-stats {
+        gap: 0.6rem;
+        padding: 0.6rem;
+        margin: 0.8rem 0;
+    }
+    
+    .stat-item {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .character-campaign {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.6rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .character-actions {
+        gap: 0.5rem;
+        padding-top: 0.6rem;
+    }
+    
+    .btn-edit,
+    .btn-delete {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-content {
+        padding: 0.5rem;
+    }
+    
+    .existing-characters-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .character-card.create-new {
+        height: 160px;
+    }
+    
+    .character-card.existing {
+        height: 300px;
+        padding: 1rem;
+    }
+    
+    .character-image {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .character-name {
+        font-size: 0.95rem;
+    }
+    
+    .character-stats {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    .stat-item {
+        padding: 0.4rem;
+        font-size: 0.75rem;
+    }
+    
+    .character-campaign {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.5rem;
+    }
+    
+    .character-actions {
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+    
+    .btn-edit,
+    .btn-delete {
+        width: 100%;
+        padding: 0.6rem;
+        font-size: 0.7rem;
     }
 }

@@ -39,6 +39,17 @@ try {
         }
     }
     
+    // Validar tamanho da imagem se fornecida
+    if (isset($input['foto_url']) && !empty($input['foto_url'])) {
+        $imageSize = strlen($input['foto_url']);
+        // Limite de 5MB para imagem em base64 (aproximadamente 7MB em base64)
+        $maxImageSize = 7 * 1024 * 1024; // 7MB
+        
+        if ($imageSize > $maxImageSize) {
+            throw new Exception('Imagem muito grande. Tamanho máximo: 5MB');
+        }
+    }
+    
     // Validar atributos (devem somar 4, com possibilidade de 1 negativo)
     $atributos = $input['atributos'];
     $soma = array_sum($atributos);
