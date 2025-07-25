@@ -49,7 +49,7 @@
             </div>
 
             <div class="characters-grid">
-                <!-- Container para o botão de criar centralizado -->
+                <!-- Card de criar personagem centralizado -->
                 <div class="create-character-container">
                     <div class="character-card create-new" id="createCharacterBtn">
                         <div class="create-icon">
@@ -57,6 +57,21 @@
                         </div>
                         <h3>Criar Novo Personagem</h3>
                         <p>Dê vida a um novo herói</p>
+                    </div>
+                </div>
+
+                <!-- Controles: Toggle de visualização (apenas acima dos cards existentes) -->
+                <div class="view-controls">
+                    <div class="view-controls-content">
+                        <span class="view-label">Visualização:</span>
+                        <div class="view-toggle">
+                            <button class="toggle-button active" id="gridViewBtn" title="Visualização em Grade">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="toggle-button" id="listViewBtn" title="Visualização em Lista">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -139,12 +154,431 @@
         </div>
     </div>
 
-    <!-- Modal para Criar/Editar Personagem -->
+    <!-- Modal para Criar Personagem Completo -->
+    <div class="character-creation-modal" id="characterCreationModal" style="display: none;">
+        <div class="modal-backdrop" id="characterCreationBackdrop"></div>
+        <div class="modal-content character-creation-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Criar Novo Personagem</h2>
+                <button class="modal-close" id="closeCharacterCreationModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body character-creation-body">
+                <form id="characterCreationForm">
+                    <!-- Etapa 1: Informações Básicas -->
+                    <div class="creation-step active" id="step1">
+                        <h3><i class="fas fa-info-circle"></i> Informações Básicas</h3>
+                        
+                        <div class="basic-info-container">
+                            <div class="image-section">
+                                <label>Imagem do Personagem</label>
+                                <div class="image-upload-container">
+                                    <div class="image-preview" id="imagePreview">
+                                        <i class="fas fa-user"></i>
+                                        <span>Clique para adicionar imagem</span>
+                                    </div>
+                                    <input type="file" id="characterImageFile" accept="image/*" style="display: none;">
+                                    <input type="hidden" id="characterImageData" name="foto_url">
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <div class="form-group">
+                                    <label for="characterName">Nome do Personagem *</label>
+                                    <input type="text" id="characterName" name="nome" required maxlength="100" placeholder="Digite o nome do personagem">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="characterCampaignCode">Código da Campanha</label>
+                                    <input type="text" id="characterCampaignCode" name="codigo_campanha" 
+                                           placeholder="Digite o código da campanha (opcional)" 
+                                           maxlength="20">
+                                    <small>Digite o código fornecido pelo mestre para participar de uma campanha</small>
+                                    <div id="campaignValidation" class="campaign-validation" style="display: none;">
+                                        <!-- Feedback sobre a campanha será mostrado aqui -->
+                                    </div>
+                                    <input type="hidden" id="characterCampaign" name="campanha_id">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Etapa 2: Origem -->
+                    <div class="creation-step" id="step2">
+                        <h3><i class="fas fa-home"></i> Escolha sua Origem</h3>
+                        
+                        <div class="search-container">
+                            <div class="search-input-wrapper">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="originSearch" placeholder="Buscar origem por nome..." autocomplete="off">
+                                <button type="button" id="clearOriginSearch" class="clear-search" style="display: none;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="selection-container">
+                            <div class="selection-list" id="originsList">
+                                <!-- Origens serão carregadas aqui -->
+                            </div>
+                            <div class="selection-details" id="originDetails">
+                                <div class="placeholder-text">
+                                    Selecione uma origem para ver os detalhes
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedOrigin" name="origem_id">
+                    </div>
+
+                    <!-- Etapa 3: Legado -->
+                    <div class="creation-step" id="step3">
+                        <h3><i class="fas fa-crown"></i> Escolha seu Legado</h3>
+                        
+                        <!-- Opção de Mestiço -->
+                        <div class="half-race-container">
+                            <div class="half-race-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="halfRaceToggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <div class="toggle-info">
+                                    <h4>Mestiço</h4>
+                                    <p>Escolha dois legados. Custo das habilidades +1, última habilidade indisponível.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="search-container">
+                            <div class="search-input-wrapper">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="legacySearch" placeholder="Buscar legado por nome..." autocomplete="off">
+                                <button type="button" id="clearLegacySearch" class="clear-search" style="display: none;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Container para legado principal -->
+                        <div class="legacy-selection-wrapper">
+                            <div class="legacy-section" id="primaryLegacySection">
+                                <h4>Legado Principal <span class="legacy-subtitle">(características e atributos)</span></h4>
+                                <div class="selection-container">
+                                    <div class="selection-list" id="legacyList">
+                                        <!-- Legados serão carregados aqui -->
+                                    </div>
+                                    <div class="selection-details" id="legacyDetails">
+                                        <div class="placeholder-text">
+                                            Selecione um legado para ver os detalhes
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Seção do segundo legado (apenas para mestiços) -->
+                            <div class="legacy-section secondary-legacy-section" id="secondaryLegacySection" style="display: none;">
+                                <div class="secondary-legacy-header">
+                                    <h4>Segundo Legado <span class="legacy-subtitle">(apenas para caminhos)</span></h4>
+                                    <div class="mestizo-badge">
+                                        <i class="fas fa-star"></i>
+                                        Mestiço
+                                    </div>
+                                </div>
+                                
+                                <div class="mestizo-warning-inline">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Caminhos deste legado: custo +1, última habilidade indisponível</span>
+                                </div>
+                                
+                                <div class="search-container secondary-search">
+                                    <div class="search-input-wrapper">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" id="secondaryLegacySearch" placeholder="Buscar segundo legado..." autocomplete="off">
+                                        <button type="button" id="clearSecondaryLegacySearch" class="clear-search" style="display: none;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="selection-container">
+                                    <div class="selection-list" id="secondaryLegacyList">
+                                        <!-- Segundo legado será carregado aqui -->
+                                    </div>
+                                    <div class="selection-details" id="secondaryLegacyDetails">
+                                        <div class="placeholder-text">
+                                            Selecione um segundo legado
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" id="selectedLegacy" name="legado_id">
+                        <input type="hidden" id="selectedSecondaryLegacy" name="legado_secundario_id">
+                        <input type="hidden" id="isHalfRace" name="meia_raca" value="0">
+                    </div>
+
+                    <!-- Etapa 4: Caminho do Legado -->
+                    <div class="creation-step" id="step4">
+                        <h3><i class="fas fa-route"></i> Escolha seu Caminho</h3>
+                        
+                        <!-- Caminho Principal -->
+                        <div class="path-section" id="primaryPathSection">
+                            <h4>Caminho Principal <span class="path-subtitle">(do legado principal)</span></h4>
+                            <div class="selection-container">
+                                <div class="selection-list" id="pathList">
+                                    <!-- Caminhos serão carregados aqui -->
+                                </div>
+                                <div class="selection-details" id="pathDetails">
+                                    <div class="placeholder-text">
+                                        Selecione um caminho para ver os detalhes
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Caminho Secundário (apenas para mestiços) -->
+                        <div class="path-section secondary-path-section" id="secondaryPathSection" style="display: none;">
+                            <div class="secondary-path-header">
+                                <h4>Caminho Secundário <span class="path-subtitle">(do segundo legado)</span></h4>
+                                <div class="mestizo-path-badge">
+                                    <i class="fas fa-star"></i>
+                                    Mestiço
+                                </div>
+                            </div>
+                            
+                            <div class="mestizo-warning-inline">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Todas as habilidades têm custo +1 e a última fica indisponível</span>
+                            </div>
+                            
+                            <div class="selection-container">
+                                <div class="selection-list" id="secondaryPathList">
+                                    <!-- Caminhos secundários serão carregados aqui -->
+                                </div>
+                                <div class="selection-details" id="secondaryPathDetails">
+                                    <div class="placeholder-text">
+                                        Selecione um caminho secundário
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" id="selectedPath" name="caminho_legado_id">
+                        <input type="hidden" id="selectedSecondaryPath" name="legado__caminho_id">
+                    </div>
+
+                    <!-- Etapa 5: Atributos -->
+                    <div class="creation-step" id="step5">
+                        <h3><i class="fas fa-chart-bar"></i> Distribua seus Atributos</h3>
+                        
+                        <div class="attributes-container">
+                            <div class="attributes-info">
+                                <p>Você tem <strong>4 pontos</strong> para distribuir entre os atributos.</p>
+                                <p>Você pode deixar <strong>1 atributo negativo (-1)</strong> para ganhar <strong>1 ponto extra</strong>.</p>
+                                <div class="origin-bonus" id="originBonus" style="display: none;">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Bônus da origem: <strong id="originBonusAttr"></strong></span>
+                                </div>
+                                <div class="attribute-actions">
+                                    <button type="button" class="btn-randomize" id="randomizeAttributes">
+                                        <i class="fas fa-dice"></i> Randomizar
+                                    </button>
+                                    <button type="button" class="btn-reset" id="resetAttributes">
+                                        <i class="fas fa-undo"></i> Resetar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="attributes-grid">
+                                <!-- Físico | Vitalidade -->
+                                <div class="attributes-row">
+                                    <div class="attribute-item">
+                                        <label>Físico</label>
+                                        <div class="attribute-controls">
+                                            <button type="button" class="attr-btn" data-attr="fisico" data-action="decrease">-</button>
+                                            <span class="attr-value" id="fisico-value">0</span>
+                                            <button type="button" class="attr-btn" data-attr="fisico" data-action="increase">+</button>
+                                        </div>
+                                        <input type="hidden" name="atributos[fisico]" id="fisico" value="0">
+                                    </div>
+                                    <div class="attribute-item">
+                                        <label>Vitalidade</label>
+                                        <div class="attribute-controls">
+                                            <button type="button" class="attr-btn" data-attr="vitalidade" data-action="decrease">-</button>
+                                            <span class="attr-value" id="vitalidade-value">0</span>
+                                            <button type="button" class="attr-btn" data-attr="vitalidade" data-action="increase">+</button>
+                                        </div>
+                                        <input type="hidden" name="atributos[vitalidade]" id="vitalidade" value="0">
+                                    </div>
+                                </div>
+
+                                <!-- Técnica | Intelecto -->
+                                <div class="attributes-row">
+                                    <div class="attribute-item">
+                                        <label>Técnica</label>
+                                        <div class="attribute-controls">
+                                            <button type="button" class="attr-btn" data-attr="tecnica" data-action="decrease">-</button>
+                                            <span class="attr-value" id="tecnica-value">0</span>
+                                            <button type="button" class="attr-btn" data-attr="tecnica" data-action="increase">+</button>
+                                        </div>
+                                        <input type="hidden" name="atributos[tecnica]" id="tecnica" value="0">
+                                    </div>
+                                    <div class="attribute-item">
+                                        <label>Intelecto</label>
+                                        <div class="attribute-controls">
+                                            <button type="button" class="attr-btn" data-attr="intelecto" data-action="decrease">-</button>
+                                            <span class="attr-value" id="intelecto-value">0</span>
+                                            <button type="button" class="attr-btn" data-attr="intelecto" data-action="increase">+</button>
+                                        </div>
+                                        <input type="hidden" name="atributos[intelecto]" id="intelecto" value="0">
+                                    </div>
+                                </div>
+
+                                <!-- Presença | Vivência -->
+                                <div class="attributes-row">
+                                    <div class="attribute-item">
+                                        <label>Presença</label>
+                                        <div class="attribute-controls">
+                                            <button type="button" class="attr-btn" data-attr="presenca" data-action="decrease">-</button>
+                                            <span class="attr-value" id="presenca-value">0</span>
+                                            <button type="button" class="attr-btn" data-attr="presenca" data-action="increase">+</button>
+                                        </div>
+                                        <input type="hidden" name="atributos[presenca]" id="presenca" value="0">
+                                    </div>
+                                    <div class="attribute-item">
+                                        <label>Vivência</label>
+                                        <div class="attribute-controls">
+                                            <button type="button" class="attr-btn" data-attr="vivencia" data-action="decrease">-</button>
+                                            <span class="attr-value" id="vivencia-value">0</span>
+                                            <button type="button" class="attr-btn" data-attr="vivencia" data-action="increase">+</button>
+                                        </div>
+                                        <input type="hidden" name="atributos[vivencia]" id="vivencia" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="points-counter">
+                                <div class="points-info">
+                                    <div class="points-remaining">
+                                        <span>Pontos restantes: <strong id="pointsRemaining">4</strong></span>
+                                    </div>
+                                    <div class="points-used">
+                                        <span>Pontos gastos: <strong id="pointsUsed">0</strong></span>
+                                    </div>
+                                    <div class="negative-bonus" id="negativeBonus" style="display: none;">
+                                        <i class="fas fa-star"></i>
+                                        <span>Bônus por atributo negativo: <strong>+1 ponto</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Etapa 6: Maestria e Reação -->
+                    <div class="creation-step" id="step6">
+                        <h3><i class="fas fa-sword"></i> Maestria e Reação</h3>
+                        
+                        <!-- Criar Maestria de Equipamento -->
+                        <div class="form-group">
+                            <h4><i class="fas fa-plus-circle"></i> Criar Maestria de Equipamento</h4>
+                            <p class="form-description">Defina uma maestria única para seu personagem (máximo nível Básico na criação)</p>
+                            
+                            <div class="maestria-creation-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="maestriaNome">Nome da Maestria *</label>
+                                        <input type="text" id="maestriaNome" name="maestria_nome" 
+                                               placeholder="Ex: Espadas Longas, Machados de Guerra..." 
+                                               maxlength="100" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="maestriaNivel">Nível de Maestria *</label>
+                                        <div class="custom-select">
+                                            <select id="maestriaNivel" name="maestria_nivel" required>
+                                                <option value="">Selecione o nível</option>
+                                                <option value="Sem Treino">Sem Treino</option>
+                                                <option value="Básico">Básico</option>
+                                            </select>
+                                        </div>
+                                        <small>Na criação, apenas "Sem Treino" e "Básico" estão disponíveis</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="maestriaDano">Dano da Arma *</label>
+                                        <input type="text" id="maestriaDano" name="maestria_dano" 
+                                               placeholder="Ex: 1d12 + 2 + DB, 1d8 + DB..." 
+                                               maxlength="50" required>
+                                        <small>Use formato de dados: 1d6, 1d8, 1d12, etc. + bônus + DB</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="maestriaAlvo">Alvo Primário *</label>
+                                        <div class="custom-select">
+                                            <select id="maestriaAlvo" name="maestria_alvo" required>
+                                                <option value="">Selecione o alvo</option>
+                                                <option value="Ambos">Ambos (Humanoides e Criaturas)</option>
+                                                <option value="Humanoide">Humanoides</option>
+                                                <option value="Criaturas">Criaturas</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reação Inicial -->
+                        <div class="form-group">
+                            <label>Reação Inicial *</label>
+                            <div class="reactions-list" id="reactionsList">
+                                <!-- Reações serão carregadas aqui -->
+                            </div>
+                            <input type="hidden" id="selectedReaction" name="reacao_id">
+                        </div>
+                    </div>
+
+                    <!-- Resumo Final -->
+                    <div class="creation-step" id="step7">
+                        <h3><i class="fas fa-clipboard-check"></i> Resumo do Personagem</h3>
+                        
+                        <div class="character-summary" id="characterSummary">
+                            <!-- Resumo será gerado aqui -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer character-creation-footer">
+                <button type="button" class="btn-previous" id="previousStep" style="display: none;">
+                    <i class="fas fa-arrow-left"></i>
+                    Anterior
+                </button>
+                <button type="button" class="btn-cancel" id="cancelCharacterCreation">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn-next" id="nextStep">
+                    <i class="fas fa-arrow-right"></i>
+                    Próximo
+                </button>
+                <button type="submit" class="btn-create" id="createCharacter" style="display: none;">
+                    <i class="fas fa-user-plus"></i>
+                    Criar Personagem
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Personagem Simples -->
     <div class="character-modal" id="characterModal" style="display: none;">
         <div class="modal-backdrop" id="characterBackdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="characterModalTitle"><i class="fas fa-plus"></i> Criar Novo Personagem</h2>
+                <h2 id="characterModalTitle"><i class="fas fa-edit"></i> Editar Personagem</h2>
                 <button class="modal-close" id="closeCharacterModal">
                     <i class="fas fa-times"></i>
                 </button>
@@ -155,19 +589,19 @@
                     <input type="hidden" id="characterId" value="">
                     
                     <div class="form-group">
-                        <label for="characterName">Nome do Personagem</label>
-                        <input type="text" id="characterName" name="nome" required maxlength="100" placeholder="Digite o nome do personagem">
+                        <label for="editCharacterName">Nome do Personagem</label>
+                        <input type="text" id="editCharacterName" name="nome" required maxlength="100" placeholder="Digite o nome do personagem">
                     </div>
 
                     <div class="form-group">
-                        <label for="characterImage">URL da Imagem</label>
-                        <input type="url" id="characterImage" name="foto_url" placeholder="https://exemplo.com/imagem.jpg">
+                        <label for="editCharacterImage">URL da Imagem</label>
+                        <input type="url" id="editCharacterImage" name="foto_url" placeholder="https://exemplo.com/imagem.jpg">
                         <small>Cole a URL de uma imagem para representar seu personagem</small>
                     </div>
 
                     <div class="form-group">
-                        <label for="characterCampaign">Campanha</label>
-                        <select id="characterCampaign" name="campanha_id">
+                        <label for="editCharacterCampaign">Campanha</label>
+                        <select id="editCharacterCampaign" name="campanha_id">
                             <option value="">Nenhuma campanha</option>
                             <!-- Campanhas serão carregadas via JavaScript -->
                         </select>
@@ -216,9 +650,11 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../script/utils/backend-utils.js"></script>
     <script src="../script/route-protection.js"></script>
     <script src="../script/utils/settings-manager.js"></script>
     <script src="../script/dashboard.js"></script>
+    <script src="../script/character-creation.js"></script>
     <script src="../script/characters.js"></script>
 
     <script>

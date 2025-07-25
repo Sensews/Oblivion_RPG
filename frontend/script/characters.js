@@ -9,12 +9,14 @@ class CharactersManager {
         this.editingCharacterId = null;
         this.deletingCharacterId = null;
         this.userSession = null;
+        this.currentView = 'grid'; // 'grid' ou 'list'
         this.init();
     }
 
     init() {
         this.loadUserSession();
         this.bindEvents();
+        this.loadViewPreference();
         this.loadCampaigns();
         this.loadCharacters();
     }
@@ -47,13 +49,25 @@ class CharactersManager {
     // ================================
 
     bindEvents() {
-        // Criar novo personagem
+        // Criar novo personagem - agora abre o modal completo
         const createBtn = document.getElementById('createCharacterBtn');
         if (createBtn) {
             createBtn.addEventListener('click', () => this.openCreateModal());
         }
 
-        // Modal de personagem
+        // Toggle de visualização
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        
+        if (gridViewBtn) {
+            gridViewBtn.addEventListener('click', () => this.setViewMode('grid'));
+        }
+        
+        if (listViewBtn) {
+            listViewBtn.addEventListener('click', () => this.setViewMode('list'));
+        }
+
+        // Modal de edição de personagem (simples)
         const characterModal = document.getElementById('characterModal');
         const characterBackdrop = document.getElementById('characterBackdrop');
         const closeCharacterModal = document.getElementById('closeCharacterModal');
@@ -65,7 +79,7 @@ class CharactersManager {
             }
         });
 
-        // Form de personagem
+        // Form de personagem (edição)
         const characterForm = document.getElementById('characterForm');
         if (characterForm) {
             characterForm.addEventListener('submit', (e) => this.handleSaveCharacter(e));
@@ -85,6 +99,42 @@ class CharactersManager {
 
         if (confirmDelete) {
             confirmDelete.addEventListener('click', () => this.deleteCharacter());
+        }
+    }
+
+    // ================================
+    // GERENCIAMENTO DE VISUALIZAÇÃO
+    // ================================
+
+    setViewMode(mode) {
+        this.currentView = mode;
+        
+        // Atualizar botões
+        const gridBtn = document.getElementById('gridViewBtn');
+        const listBtn = document.getElementById('listViewBtn');
+        
+        if (gridBtn && listBtn) {
+            gridBtn.classList.toggle('active', mode === 'grid');
+            listBtn.classList.toggle('active', mode === 'list');
+        }
+        
+        // Atualizar container
+        const container = document.getElementById('existingCharacters');
+        if (container) {
+            container.className = mode === 'list' ? 'existing-characters-list' : 'existing-characters-grid';
+        }
+        
+        // Salvar preferência
+        localStorage.setItem('oblivion_characters_view', mode);
+        
+        // Re-renderizar personagens para aplicar o novo layout
+        this.renderCharacters();
+    }
+
+    loadViewPreference() {
+        const savedView = localStorage.getItem('oblivion_characters_view');
+        if (savedView && ['grid', 'list'].includes(savedView)) {
+            this.setViewMode(savedView);
         }
     }
 
@@ -130,9 +180,20 @@ class CharactersManager {
         if (!this.userSession) return;
 
         try {
-            // Aqui você faria uma chamada para o backend
-            // Por enquanto, começamos com array vazio
-            this.characters = [];
+            const response = await window.makeBackendRequest('get-characters.php', {
+                method: 'POST',
+                body: JSON.stringify({
+                    usuario_id: this.userSession.user_id
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.characters = data.characters || [];
+            } else {
+                throw new Error(data.error || 'Erro ao carregar personagens');
+            }
 
             this.renderCharacters();
         } catch (error) {
@@ -161,18 +222,31 @@ class CharactersManager {
             <div class="character-card existing" data-id="${character.id}">
                 <div class="character-image ${character.foto_url ? '' : 'no-image'}">
                     ${character.foto_url 
-                        ? `<img src="${character.foto_url}" alt="${character.nome}" onerror="this.parentElement.innerHTML='<i class=\\"fas fa-user\\"></i>'">` 
+                        ? `<img src="${character.foto_url}" alt="${character.nome}" data-character-id="${character.id}">` 
                         : '<i class="fas fa-user"></i>'
                     }
                 </div>
                 <div class="character-info">
                     <h3 class="character-name">${this.escapeHtml(character.nome)}</h3>
+                    
+                    <div class="character-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-heart"></i>
+                            <span>PV: ${character.pv_atual || 0}/${character.pv_max || 0}</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>PE: ${character.pe_atual || 0}/${character.pe_max || 0}</span>
+                        </div>
+                    </div>
+                    
                     <div class="character-campaign ${character.campanha_nome ? '' : 'no-campaign'}">
                         ${character.campanha_nome 
                             ? `<i class="fas fa-gamepad"></i> ${this.escapeHtml(character.campanha_nome)}`
                             : '<i class="fas fa-unlink"></i> Sem campanha'
                         }
                     </div>
+                    
                     <div class="character-actions">
                         <button class="btn-edit" onclick="charactersManager.openEditModal(${character.id})">
                             <i class="fas fa-edit"></i> Editar
@@ -184,6 +258,26 @@ class CharactersManager {
                 </div>
             </div>
         `).join('');
+
+        // Adicionar event listeners para tratar erros de imagem
+        this.setupImageErrorHandling();
+    }
+
+    setupImageErrorHandling() {
+        const images = document.querySelectorAll('.character-image img');
+        images.forEach(img => {
+            img.addEventListener('error', (e) => {
+                const imageContainer = e.target.parentElement;
+                if (imageContainer && imageContainer.classList.contains('character-image')) {
+                    imageContainer.classList.add('no-image');
+                    imageContainer.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            });
+            
+            img.addEventListener('load', (e) => {
+                e.target.style.opacity = '1';
+            });
+        });
     }
 
     // ================================
@@ -191,18 +285,11 @@ class CharactersManager {
     // ================================
 
     openCreateModal() {
-        this.editingCharacterId = null;
-        this.resetForm();
-        
-        const modal = document.getElementById('characterModal');
-        const title = document.getElementById('characterModalTitle');
-        
-        if (title) {
-            title.innerHTML = '<i class="fas fa-plus"></i> Criar Novo Personagem';
-        }
-        
-        if (modal) {
-            modal.classList.add('show');
+        // Abrir o modal de criação completo
+        if (window.characterCreationModal) {
+            window.characterCreationModal.openModal();
+        } else {
+            console.error('Modal de criação não encontrado');
         }
     }
 
