@@ -267,19 +267,52 @@ function deleteCampaign($db, $input) {
             return;
         }
         
-        $query = "DELETE FROM campanhas WHERE id = :id AND mestre_id = :mestre_id";
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':mestre_id', $mestre_id, PDO::PARAM_INT);
+        // Iniciar transação para garantir consistência
+        $db->beginTransaction();
         
-        if ($stmt->execute()) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Campanha excluída com sucesso!'
-            ]);
-        } else {
-            http_response_code(500);
-            echo json_encode(['error' => 'Erro ao excluir campanha']);
+        try {
+            // 1. Deletar documentos do editor de texto da campanha (editor_mestre)
+            $deleteDocuments = "DELETE FROM editor_mestre WHERE campanha_id = :id";
+            $stmt = $db->prepare($deleteDocuments);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            // 2. Deletar NPCs da campanha (fichas_npc)
+            $deleteNpcs = "DELETE FROM fichas_npc WHERE campanha_id = :id";
+            $stmt = $db->prepare($deleteNpcs);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            // 3. Desassociar personagens da campanha (personagens) - não deletá-los, apenas remover a associação
+            $updateCharacters = "UPDATE personagens SET campanha_id = NULL WHERE campanha_id = :id";
+            $stmt = $db->prepare($updateCharacters);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            // 4. Finalmente, deletar a campanha
+            $query = "DELETE FROM campanhas WHERE id = :id AND mestre_id = :mestre_id";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':mestre_id', $mestre_id, PDO::PARAM_INT);
+            
+            if ($stmt->execute()) {
+                // Confirmar transação
+                $db->commit();
+                
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Campanha e todos os dados relacionados excluídos com sucesso!'
+                ]);
+            } else {
+                $db->rollback();
+                http_response_code(500);
+                echo json_encode(['error' => 'Erro ao excluir campanha']);
+            }
+            
+        } catch (Exception $e) {
+            // Reverter transação em caso de erro
+            $db->rollback();
+            throw $e;
         }
         
     } catch (Exception $e) {
